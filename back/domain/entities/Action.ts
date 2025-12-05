@@ -2,15 +2,14 @@ import { Order } from "./Order";
 import { User } from "./User";
 
 export class Action {
-    public constructor(
-        public readonly id: string,
-        public readonly director: User,
-        public readonly name: string,
-        public readonly symbol: string,
-        public readonly currentPrice: number,
-        public readonly isActive: boolean,
-        public readonly orders: Array<Order> = [],
-
-        public readonly createdAt: Date,
+    constructor(
+        readonly id: string,
+        readonly director: User,
+        readonly name: string,
+        readonly symbol: string,
+        readonly currentPrice: number,
+        readonly isActive: boolean,
+        readonly orders: Order[] = [],
+        readonly createdAt: Date,
     ) {}
 }

@@ -2,15 +2,15 @@ import { LoanState } from "../enum/Loan/State";
 import { User } from "./User";
 
 export class Loan {
-    public constructor(
-        public readonly id: string,
-        public readonly advisor: User,
-        public readonly client: User,
-        public readonly amount: number,
-        public readonly annualInterestRate: number,
-        public readonly insuranceRate: number,
-        public readonly monthlyPayment: number,
-        public readonly state: LoanState,
-        public readonly createdAt: Date,
+    constructor(
+        readonly id: string,
+        readonly advisor: User,
+        readonly client: User,
+        readonly amount: number,
+        readonly annualInterestRate: number,
+        readonly insuranceRate: number,
+        readonly monthlyPayment: number,
+        readonly state: LoanState,
+        readonly createdAt: Date,
     ) {}
 }

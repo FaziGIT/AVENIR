@@ -4,16 +4,15 @@ import { Transaction } from "./Transaction";
 import { SavingRate } from "./SavingRate";
 
 export class Account {
-    public constructor(
-        public readonly id: string,
-        public readonly user: User,
-        public readonly iban: string,
-        public readonly name: string | null,
-        public readonly type: AccountType,
-        public readonly balance: number,
-        public readonly savingRate: SavingRate | null,
-        public readonly transactions: Array<Transaction> = [],
-        
-        public readonly createdAt: Date,
+    constructor(
+        readonly id: string,
+        readonly user: User,
+        readonly iban: string,
+        readonly name: string | null,
+        readonly type: AccountType,
+        readonly balance: number,
+        readonly savingRate: SavingRate | null,
+        readonly transactions: Transaction[] = [],
+        readonly createdAt: Date,
     ) {}
-}   
+}

@@ -2,11 +2,11 @@ import { User } from "./User";
 import { Message } from "./Message";
 
 export class Chat {
-    public constructor(
-        public readonly id: string,
-        public readonly advisor: User,
-        public readonly client: User,
-        public readonly messages: Array<Message> = [],
-        public readonly createdAt: Date,
+    constructor(
+        readonly id: string,
+        readonly advisor: User,
+        readonly client: User,
+        readonly messages: Message[] = [],
+        readonly createdAt: Date,
     ) {}
 }

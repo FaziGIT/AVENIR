@@ -5,19 +5,18 @@ import { Loan } from "./Loan";
 import { Order } from "./Order";
 
 export class User {
-    public constructor(
-        public readonly id: string,
-        public readonly firstName: string,
-        public readonly lastName: string,
-        public readonly email: string,
-        public readonly identityNumber: string,
-        public readonly passcode: string,
-        public readonly role: UserRole,
-        public readonly state: UserState,
-        public readonly accounts: Array<Account> = [],
-        public readonly loans: Array<Loan> = [],
-        public readonly orders: Array<Order> = [],
-
-        public readonly createdAt: Date,
+    constructor(
+        readonly id: string,
+        readonly firstName: string,
+        readonly lastName: string,
+        readonly email: string,
+        readonly identityNumber: string,
+        readonly passcode: string,
+        readonly role: UserRole,
+        readonly state: UserState,
+        readonly accounts: Account[] = [],
+        readonly loans: Loan[] = [],
+        readonly orders: Order[] = [],
+        readonly createdAt: Date,
     ) {}
 }

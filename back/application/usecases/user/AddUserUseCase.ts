@@ -21,11 +21,9 @@ export interface AddUserInput {
 }
 
 export class AddUserUseCase {
-    public constructor(
-        private readonly userRepository: UserRepository,
-    ) {}
+    constructor(private readonly userRepository: UserRepository) {}
 
-    public async execute(input: AddUserInput): Promise<User> {
+    async execute(input: AddUserInput): Promise<User> {
         const user = new User(
             randomUUID(),
             input.firstName,
@@ -38,11 +36,9 @@ export class AddUserUseCase {
             input.accounts,
             input.loans,
             input.orders,
-            new Date(),
-
+            new Date()
         );
 
-        const createdUser = await this.userRepository.add(user);
-        return createdUser;
+        return this.userRepository.add(user);
     }
 }

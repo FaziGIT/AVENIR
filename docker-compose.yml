@@ -1,0 +1,57 @@
+
+services:
+  # PostgreSQL - Base de données par défaut
+  postgres:
+    image: postgres:16.5-alpine
+    container_name: avenir-postgres
+    profiles: ["postgres", "all"]
+    environment:
+      POSTGRES_USER: avenir_user
+      POSTGRES_PASSWORD: avenir_password
+      POSTGRES_DB: avenir_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./back/infrastructure/database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U avenir_user -d avenir_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - avenir-network
+
+  # MySQL - Base de données alternative
+  mysql:
+    image: mysql:8.0
+    container_name: avenir-mysql
+    profiles: ["mysql", "all"]
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: avenir_password
+      MYSQL_DATABASE: avenir_db
+      MYSQL_USER: avenir_user
+      MYSQL_PASSWORD: avenir_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./back/infrastructure/database/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pavenir_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - avenir-network
+
+networks:
+  avenir-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mysql_data:
