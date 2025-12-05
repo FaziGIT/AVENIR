@@ -1,66 +1,103 @@
-# AVENIR - Application Bancaire Moderne
+# AVENIR
 
-Application bancaire full-stack construite avec Next.js, TypeScript, tRPC et Fastify.
+Application bancaire avec architecture hexagonale.
 
-## 📁 Structure du Projet
+## 🚀 Démarrage
+
+```bash
+# 1. Démarrer PostgreSQL
+docker compose --profile postgres up -d
+
+# 2. Installer
+cd back
+npm install
+cp .env.template .env
+
+# 3. Lancer
+npm run dev
+```
+
+**Serveur sur http://localhost:3000**
+
+## 📦 Stack
+
+- **Runtime**: Node.js + TypeScript
+- **Framework**: Fastify
+- **Architecture**: Hexagonale (Clean Architecture)
+- **DB**: PostgreSQL 16 / MySQL 8
+- **Infrastructure**: Docker Compose
+
+## 🔄 Changer de DB
+
+Modifiez `DB_TYPE` dans `.env` :
+
+```bash
+# PostgreSQL
+docker compose --profile postgres up -d
+DB_TYPE=postgres
+
+# MySQL  
+docker compose --profile mysql up -d
+DB_TYPE=mysql
+```
+
+## 📁 Structure
 
 ```
 AVENIR/
-├── back/           # Backend API (Fastify + Clean Architecture)
-│   ├── application/      # Use Cases et Ports
-│   ├── domain/          # Entités métier et Enums
-│   └── infrastructure/  # Frameworks et Repositories
-│
-└── front/          # Frontend (Next.js 16 + TypeScript)
-    ├── app/             # Pages et layouts Next.js
-    ├── components/      # Composants React réutilisables
-    ├── hooks/           # Custom hooks
-    ├── i18n/            # Internationalisation (FR/EN)
-    └── lib/             # Utilitaires et configuration
+├── back/
+│   ├── domain/                     # Entités métier
+│   ├── application/                # Use cases
+│   └── infrastructure/
+│       ├── config/                 # Configuration
+│       ├── database/               # Contextes DB
+│       │   ├── postgres/
+│       │   └── mysql/
+│       ├── repositories/           # Implémentations
+│       │   ├── postgres/
+│       │   └── mysql/
+│       ├── factories/              # Factory pattern
+│       └── framework/              # HTTP Server
+│           └── fastify/
+└── docker-compose.yml
 ```
 
-## 🚀 Démarrage Rapide
-
-### Backend
+## 🐳 Docker
 
 ```bash
-cd back
-npm install
-npm run dev    # Démarre sur http://localhost:3001
+# PostgreSQL
+docker compose --profile postgres up -d
+docker compose exec postgres psql -U avenir_user -d avenir_db
+
+# MySQL
+docker compose --profile mysql up -d
+docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db
+
+# Arrêter
+docker compose down
+
+# Réinitialiser
+docker compose down -v
 ```
 
-### Frontend
+## 📡 API
 
+### Health Check
 ```bash
-cd front
-npm install
-npm run dev    # Démarre sur http://localhost:3000
+GET http://localhost:3000/health
 ```
 
-## 🛠️ Technologies
+### Users
 
-### Backend
-- **Fastify** - Framework web rapide
-- **TypeScript** - Typage statique
-- **Clean Architecture** - Architecture hexagonale
+**GET /users/:id** - Récupérer un utilisateur
 
-### Frontend
-- **Next.js 16** - Framework React avec App Router
-- **TypeScript** - Typage statique
-- **tRPC** - API type-safe end-to-end
-- **TailwindCSS 4** - Framework CSS utilitaire
-- **Radix UI** - Primitives d'interface accessibles
-- **Zod** - Validation de schéma
-- **React Hook Form** - Gestion de formulaires
-- **Framer Motion** - Animations
-- **i18next** - Internationalisation (FR/EN)
-
-## 🌍 Internationalisation
-
-L'application supporte le français (langue par défaut) et l'anglais.
-
-## 📝 License
-
-MIT
-
-
+**POST /users** - Créer un utilisateur
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "identityNumber": "123456789",
+  "passcode": "securePassword123"
+}
+```
