@@ -1,4 +1,4 @@
-import { LoanState } from "../enum/Loan/State";
+import { LoanState } from "../enumerations/LoanState";
 import { User } from "./User";
 
 export class Loan {

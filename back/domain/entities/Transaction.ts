@@ -1,5 +1,5 @@
 import { Account } from "./Account";
-import { TransactionType } from "../enum/Transaction/Type";
+import { TransactionType } from "../enumerations/TransactionType";
 
 export class Transaction {
     constructor(

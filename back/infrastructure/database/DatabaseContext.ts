@@ -1,4 +1,4 @@
-import { UserRepository } from '../../application/ports/repositories/UserRepository';
+import { UserRepository } from '../../domain/repositories/UserRepository';
 
 export interface DatabaseContext {
     userRepository: UserRepository;

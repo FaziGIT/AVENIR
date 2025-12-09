@@ -1,8 +1,8 @@
 import { Pool as MySQLPool } from 'mysql2/promise';
-import { User } from '../../../domain/entities/User';
-import { UserRepository } from '../../../application/ports/repositories/UserRepository';
-import { UserRole } from '../../../domain/enum/User/Role';
-import { UserState } from '../../../domain/enum/User/State';
+import { User } from '../../../../domain/entities/User';
+import { UserRepository } from '../../../../domain/repositories/UserRepository';
+import { UserRole } from '../../../../domain/enumerations/UserRole';
+import { UserState } from '../../../../domain/enumerations/UserState';
 import { randomUUID } from 'crypto';
 
 export class MySQLUserRepository implements UserRepository {
@@ -14,7 +14,7 @@ export class MySQLUserRepository implements UserRepository {
         const insertQuery = `
             INSERT INTO users (id, first_name, last_name, email, identity_number, passcode, role, state, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
+        `;  
 
         const newUser = new User(
             userId,
@@ -87,6 +87,17 @@ export class MySQLUserRepository implements UserRepository {
     async getById(id: string): Promise<User | null> {
         try {
             const [rows] = await this.pool.execute('SELECT * FROM users WHERE id = ?', [id]);
+            const results = rows as any[];
+            return results.length === 0 ? null : this.mapRowToUser(results[0]);
+        } catch (error) {
+            console.error('Erreur MySQL:', error);
+            throw error;
+        }
+    }
+
+    async getByEmail(email: string): Promise<User | null> {
+        try {
+            const [rows] = await this.pool.execute('SELECT * FROM users WHERE email = ?', [email]);
             const results = rows as any[];
             return results.length === 0 ? null : this.mapRowToUser(results[0]);
         } catch (error) {

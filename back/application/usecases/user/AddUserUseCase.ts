@@ -1,44 +1,38 @@
 import { User } from "../../../domain/entities/User";
-import { UserRepository } from "../../ports/repositories/UserRepository";
+import { UserRepository } from "../../../domain/repositories/UserRepository";
 import { randomUUID } from "crypto";
-import { UserRole } from "../../../domain/enum/User/Role";
-import { UserState } from "../../../domain/enum/User/State";
-import { Account } from "../../../domain/entities/Account";
-import { Loan } from "../../../domain/entities/Loan";
-import { Order } from "../../../domain/entities/Order";
-
-export interface AddUserInput {
-    firstName: string;
-    lastName: string;
-    email: string;
-    identityNumber: string;
-    passcode: string;
-    role: UserRole;
-    state: UserState;
-    accounts: Account[];
-    loans: Loan[];
-    orders: Order[];
-}
+import { UserState } from "../../../domain/enumerations/UserState";
+import { AddUserRequest } from "../../requests/AddUserRequest";
+import { AddUserResponse, AddUserResponseMapper } from "../../responses/AddUserResponse";
+import { UserAlreadyExistsError } from "../../../domain/errors/UserAlreadyExistsError";   
 
 export class AddUserUseCase {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async execute(input: AddUserInput): Promise<User> {
+    async execute(request: AddUserRequest): Promise<AddUserResponse> {  
+        // Vérifier si l'utilisateur existe déjà
+        const existingUser = await this.userRepository.getByEmail(request.email);
+        if (existingUser) {
+            throw new UserAlreadyExistsError(request.email);
+        }
+
+        // Créer l'utilisateur
         const user = new User(
             randomUUID(),
-            input.firstName,
-            input.lastName,
-            input.email,
-            input.identityNumber,
-            input.passcode,
-            input.role,
-            input.state,
-            input.accounts,
-            input.loans,
-            input.orders,
+            request.firstName,
+            request.lastName,
+            request.email,
+            request.identityNumber,
+            request.passcode,
+            request.role,
+            UserState.ACTIVE,
+            [],
+            [],
+            [],
             new Date()
         );
 
-        return this.userRepository.add(user);
+        const savedUser = await this.userRepository.add(user);
+        return AddUserResponseMapper.toResponse(savedUser);
     }
 }

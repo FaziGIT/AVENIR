@@ -1,7 +1,7 @@
 import { User } from "./User";
-import { OrderType } from "../enum/Order/Type";
+import { OrderType } from "../enumerations/OrderType";
 import { Action } from "./Action";
-import { OrderState } from "../enum/Order/State";
+import { OrderState } from "../enumerations/OrderState";
 
 export class Order {
     constructor(
