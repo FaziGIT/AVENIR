@@ -1,5 +1,5 @@
-import { UserRole } from "../enum/User/Role";
-import { UserState } from "../enum/User/State";
+import { UserRole } from "../enumerations/UserRole";
+import { UserState } from "../enumerations/UserState";
 import { Account } from "./Account";
 import { Loan } from "./Loan";
 import { Order } from "./Order";

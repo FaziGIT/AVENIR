@@ -1,9 +1,10 @@
 import { DatabaseContext } from '../DatabaseContext';
 import { pool } from './connection';
-import { PostgresUserRepository } from '../../repositories/postgres/PostgresUserRepository';
+import { PostgresUserRepository } from '../../adapters/repositories/postgres/PostgresUserRepository';
+import { UserRepository } from '../../../domain/repositories/UserRepository';
 
 export class PostgresDatabaseContext implements DatabaseContext {
-    public readonly userRepository: PostgresUserRepository;
+    public readonly userRepository: UserRepository;
 
     constructor() {
         this.userRepository = new PostgresUserRepository(pool);

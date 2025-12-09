@@ -1,4 +1,4 @@
-import { UserRepository } from '../../application/ports/repositories/UserRepository';
+import { UserRepository } from '../../domain/repositories/UserRepository';
 import { databaseConfig, DatabaseType } from '../config/database.config';
 import { DatabaseContext } from '../database/DatabaseContext';
 import { PostgresDatabaseContext } from '../database/postgres/PostgresDatabaseContext';

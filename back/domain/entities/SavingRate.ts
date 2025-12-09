@@ -1,4 +1,4 @@
-import { SavingRateName } from "../enum/SavingRate/Name";
+import { SavingRateName } from "../enumerations/SavingRateName";
 import { User } from "./User";
 
 export class SavingRate {

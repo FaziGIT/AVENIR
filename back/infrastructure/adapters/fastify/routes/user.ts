@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyRequest, FastifyReply } from 'fastify';
 import { UserController } from '../controllers/UserController';
-import { AddUserInput } from '../../../../application/usecases/user/AddUserUseCase';
+import { AddUserRequest } from '../../../../application/requests/AddUserRequest';
 
 export async function userRoutes(
     fastify: FastifyInstance,
@@ -12,7 +12,7 @@ export async function userRoutes(
         return userController.getUser(request, reply);
     });
 
-    fastify.post('/users', async (request: FastifyRequest<{ Body: AddUserInput }>, reply: FastifyReply) => {
+    fastify.post('/users', async (request: FastifyRequest<{ Body: AddUserRequest }>, reply: FastifyReply) => {
         return userController.addUser(request, reply);
     });
 }

@@ -1,9 +1,10 @@
 import { Pool } from 'pg';
-import { User } from '../../../domain/entities/User';
-import { UserRepository } from '../../../application/ports/repositories/UserRepository';
-import { UserRole } from '../../../domain/enum/User/Role';
-import { UserState } from '../../../domain/enum/User/State';
+import { User } from '../../../../domain/entities/User';
+import { UserRepository } from '../../../../domain/repositories/UserRepository';
+import { UserRole } from '../../../../domain/enumerations/UserRole';
+import { UserState } from '../../../../domain/enumerations/UserState';
 import { randomUUID } from 'crypto';
+
 export class PostgresUserRepository implements UserRepository {
     constructor(private pool: Pool) {}
 
@@ -70,6 +71,16 @@ export class PostgresUserRepository implements UserRepository {
     async getById(id: string): Promise<User | null> {
         try {
             const result = await this.pool.query('SELECT * FROM users WHERE id = $1', [id]);
+            return result.rows.length === 0 ? null : this.mapRowToUser(result.rows[0]);
+        } catch (error) {
+            console.error('Erreur PostgreSQL:', error);
+            throw error;
+        }
+    }
+
+    async getByEmail(email: string): Promise<User | null> {
+        try {
+            const result = await this.pool.query('SELECT * FROM users WHERE email = $1', [email]);
             return result.rows.length === 0 ? null : this.mapRowToUser(result.rows[0]);
         } catch (error) {
             console.error('Erreur PostgreSQL:', error);

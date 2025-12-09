@@ -1,5 +1,5 @@
 import { User } from "./User";
-import { AccountType } from "../enum/Account/Type";
+import { AccountType } from "../enumerations/AccountType";
 import { Transaction } from "./Transaction";
 import { SavingRate } from "./SavingRate";
 
