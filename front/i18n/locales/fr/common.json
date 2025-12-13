@@ -38,6 +38,35 @@
     "maxLength": "Maximum {{count}} caractères autorisés",
     "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
     "notFound": "Non trouvé"
+  },
+  "dashboard": {
+    "title": "AVENIR",
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "savings": "Épargne",
+    "totalBalance": "Solde Total",
+    "recentTransactions": "Transactions Récentes",
+    "myCards": "Mes Cartes",
+    "addCard": "Ajouter une Carte",
+    "receiveFunds": "Recevoir",
+    "sendMoney": "Envoyer",
+    "incomeThisMonth": "Revenus ce mois",
+    "expensesThisMonth": "Dépenses ce mois",
+    "savingsThisMonth": "Épargne ce mois",
+    "savingsGoals": "Comptes d'épargne",
+    "viewAll": "Voir Tout",
+    "livretA": "Livret A",
+    "livretJeune": "Livret Jeune",
+    "plafond": "Plafond",
+    "transactions": "Transactions",
+    "electronics": "Électronique",
+    "completed": "Terminé",
+    "overview": "Aperçu",
+    "investment": "Investissement",
+    "card": "Carte",
+    "activity": "Activité",
+    "saving": "Épargne",
+    "yearly": "Annuel",
+    "spending": "Dépenses"
   }
 }
-

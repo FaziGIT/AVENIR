@@ -55,3 +55,16 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
+/* Tabular numbers for financial amounts */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Financial amounts with Manrope SemiBold */
+.financial-amount {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
