@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import '@/i18n/config';
 import { StatCard } from '@/components/ui/stat-card';
 import { TransactionItem } from '@/components/ui/transaction-item';
@@ -8,33 +7,16 @@ import { CreditCard } from '@/components/ui/credit-card';
 import { SavingsGoalItem } from '@/components/ui/savings-goal-item';
 import { BarChart } from '@/components/ui/bar-chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-    Wallet,
-    Search,
-    Bell,
-    User,
-    ArrowDownLeft,
-    ArrowUpRight,
-    ArrowUp,
-    ArrowDown,
-    Plus,
-    Menu,
-    X,
-    ChevronLeft,
-    ChevronRight,
-} from 'lucide-react';
+import { DashboardHeader } from '@/components/dashboard-header';
+import { Search, ArrowUp, ArrowDown, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function Home() {
-    const { t, i18n } = useTranslation('common');
-    const [mounted, setMounted] = useState(false);
+    const { t } = useLanguage();
     const [period, setPeriod] = useState('yearly');
     const [activeTab, setActiveTab] = useState('overview');
-    const [hoveredTab, setHoveredTab] = useState<string | null>(null);
-    const [activeIcon, setActiveIcon] = useState<string | null>(null);
-    const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [cardDirection, setCardDirection] = useState(1);
@@ -48,14 +30,6 @@ export default function Home() {
         status: null,
     });
     const filterRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const savedLanguage = localStorage.getItem('language');
-        if (savedLanguage && savedLanguage !== i18n.language) {
-            i18n.changeLanguage(savedLanguage);
-        }
-        setMounted(true);
-    }, [i18n]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -72,14 +46,6 @@ export default function Home() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [filterOpen]);
-
-    const navItems = [
-        { id: 'overview', label: t('dashboard.overview') },
-        { id: 'investment', label: t('dashboard.investment') },
-        { id: 'card', label: t('dashboard.card') },
-        { id: 'activity', label: t('dashboard.activity') },
-        { id: 'saving', label: t('dashboard.saving') },
-    ];
 
     const cards = [
         { cardNumber: '****4329', cardType: 'VISA', expiryDate: '09/28' },
@@ -165,247 +131,9 @@ export default function Home() {
 
     const hasActiveFilters = activeFilters.card || activeFilters.category || activeFilters.status;
 
-    if (!mounted) {
-        return null;
-    }
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <header className="border-b bg-white/80 backdrop-blur-sm">
-                <div className="mx-auto flex max-w-[1800px] items-center justify-between px-6 py-4">
-                    <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
-                            <Wallet className="h-4 w-4 text-white" />
-                        </div>
-                        <h1 className="text-lg font-bold text-gray-900">{t('dashboard.title')}</h1>
-                    </div>
-
-                    <nav className="relative hidden items-center gap-1 rounded-full bg-white p-1 shadow-sm md:flex">
-                        {navItems.map((item) => {
-                            const displayTab = hoveredTab || activeTab;
-                            const shouldShowBackground = displayTab === item.id;
-
-                            return (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setActiveTab(item.id)}
-                                    onMouseEnter={() => setHoveredTab(item.id)}
-                                    onMouseLeave={() => setHoveredTab(null)}
-                                    className={`relative z-10 cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-colors duration-200 ${
-                                        shouldShowBackground ? 'text-white' : 'text-gray-600'
-                                    }`}
-                                >
-                                    {shouldShowBackground && (
-                                        <motion.div
-                                            layoutId="navBackground"
-                                            className="absolute inset-0 rounded-full bg-gray-900"
-                                            style={{ zIndex: -1 }}
-                                            transition={{
-                                                type: 'spring',
-                                                stiffness: 380,
-                                                damping: 30,
-                                            }}
-                                        />
-                                    )}
-                                    {item.label}
-                                </button>
-                            );
-                        })}
-                    </nav>
-
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-gray-100 md:hidden"
-                    >
-                        {mobileMenuOpen ? (
-                            <X className="h-6 w-6 text-gray-900" />
-                        ) : (
-                            <Menu className="h-6 w-6 text-gray-900" />
-                        )}
-                    </button>
-
-                    <div className="relative hidden items-center gap-2 rounded-full bg-white p-1 shadow-sm md:flex">
-                        <button
-                            onMouseEnter={() => setHoveredIcon('search')}
-                            onMouseLeave={() => setHoveredIcon(null)}
-                            onClick={() => setActiveIcon('search')}
-                            className="relative z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200"
-                        >
-                            {(hoveredIcon === 'search' || activeIcon === 'search') && (
-                                <motion.div
-                                    layoutId="iconBackground"
-                                    className="absolute inset-0 rounded-full bg-gray-900"
-                                    style={{ zIndex: -1 }}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: 380,
-                                        damping: 30,
-                                    }}
-                                />
-                            )}
-                            <Search className={`h-5 w-5 ${
-                                hoveredIcon === 'search' || activeIcon === 'search' ? 'text-white' : 'text-gray-600'
-                            }`} />
-                        </button>
-                        <button
-                            onMouseEnter={() => setHoveredIcon('bell')}
-                            onMouseLeave={() => setHoveredIcon(null)}
-                            onClick={() => setActiveIcon('bell')}
-                            className="relative z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200"
-                        >
-                            {(hoveredIcon === 'bell' || activeIcon === 'bell') && (
-                                <motion.div
-                                    layoutId="iconBackground"
-                                    className="absolute inset-0 rounded-full bg-gray-900"
-                                    style={{ zIndex: -1 }}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: 380,
-                                        damping: 30,
-                                    }}
-                                />
-                            )}
-                            <Bell className={`h-5 w-5 ${
-                                hoveredIcon === 'bell' || activeIcon === 'bell' ? 'text-white' : 'text-gray-600'
-                            }`} />
-                            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500"></span>
-                        </button>
-                        <button
-                            onMouseEnter={() => setHoveredIcon('user')}
-                            onMouseLeave={() => setHoveredIcon(null)}
-                            onClick={() => setActiveIcon('user')}
-                            className="relative z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200"
-                        >
-                            {(hoveredIcon === 'user' || activeIcon === 'user') && (
-                                <motion.div
-                                    layoutId="iconBackground"
-                                    className="absolute inset-0 rounded-full bg-gray-900"
-                                    style={{ zIndex: -1 }}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: 380,
-                                        damping: 30,
-                                    }}
-                                />
-                            )}
-                            <User className={`h-5 w-5 ${
-                                hoveredIcon === 'user' || activeIcon === 'user' ? 'text-white' : 'text-gray-600'
-                            }`} />
-                        </button>
-                        <button
-                            onMouseEnter={() => setHoveredIcon('lang')}
-                            onMouseLeave={() => setHoveredIcon(null)}
-                            onClick={() => {
-                                setActiveIcon('lang');
-                                const newLang = i18n.language === 'fr' ? 'en' : 'fr';
-                                i18n.changeLanguage(newLang);
-                                if (typeof window !== 'undefined') {
-                                    localStorage.setItem('language', newLang);
-                                }
-                            }}
-                            className="relative z-10 flex h-10 min-w-[40px] cursor-pointer items-center justify-center rounded-full px-3 text-xs font-bold transition-colors duration-200"
-                        >
-                            {(hoveredIcon === 'lang' || activeIcon === 'lang') && (
-                                <motion.div
-                                    layoutId="iconBackground"
-                                    className="absolute inset-0 rounded-full bg-gray-900"
-                                    style={{ zIndex: -1 }}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: 380,
-                                        damping: 30,
-                                    }}
-                                />
-                            )}
-                            <span className={`${
-                                hoveredIcon === 'lang' || activeIcon === 'lang' ? 'text-white' : 'text-gray-600'
-                            }`}>
-                                {i18n.language.toUpperCase()}
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-                {mobileMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="border-t bg-white md:hidden"
-                    >
-                        <div className="mx-auto max-w-[1800px] px-6 py-4">
-                            <nav className="flex flex-col gap-2">
-                                {navItems.map((item) => {
-                                    const isActive = activeTab === item.id;
-                                    return (
-                                        <button
-                                            key={item.id}
-                                            onClick={() => {
-                                                setActiveTab(item.id);
-                                                setMobileMenuOpen(false);
-                                            }}
-                                            className={`cursor-pointer rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${
-                                                isActive
-                                                    ? 'bg-gray-900 text-white'
-                                                    : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    );
-                                })}
-
-                                <div className="my-2 border-t border-gray-200"></div>
-
-                                <div className="flex items-center justify-center gap-2 rounded-full bg-white p-1">
-                                    <button
-                                        onClick={() => {
-                                            setActiveIcon('search');
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100"
-                                    >
-                                        <Search className="h-5 w-5 text-gray-600" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setActiveIcon('bell');
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100"
-                                    >
-                                        <Bell className="h-5 w-5 text-gray-600" />
-                                        <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500"></span>
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setActiveIcon('user');
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100"
-                                    >
-                                        <User className="h-5 w-5 text-gray-600" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const newLang = i18n.language === 'fr' ? 'en' : 'fr';
-                                            i18n.changeLanguage(newLang);
-                                            if (typeof window !== 'undefined') {
-                                                localStorage.setItem('language', newLang);
-                                            }
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex h-10 min-w-[40px] cursor-pointer items-center justify-center rounded-full px-3 text-xs font-bold transition-colors hover:bg-gray-100"
-                                    >
-                                        {i18n.language.toUpperCase()}
-                                    </button>
-                                </div>
-                            </nav>
-                        </div>
-                    </motion.div>
-                )}
-            </header>
+        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
             <main className="mx-auto max-w-[1800px] p-6">
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -500,21 +228,19 @@ export default function Home() {
                                                         <div className="flex flex-wrap gap-2">
                                                             <button
                                                                 onClick={() => setActiveFilters({ ...activeFilters, card: activeFilters.card === 'VISA' ? null : 'VISA' })}
-                                                                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                                                    activeFilters.card === 'VISA'
-                                                                        ? 'bg-blue-600 text-white'
-                                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                                }`}
+                                                                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilters.card === 'VISA'
+                                                                    ? 'bg-blue-600 text-white'
+                                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                    }`}
                                                             >
                                                                 VISA
                                                             </button>
                                                             <button
                                                                 onClick={() => setActiveFilters({ ...activeFilters, card: activeFilters.card === 'Mastercard' ? null : 'Mastercard' })}
-                                                                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                                                    activeFilters.card === 'Mastercard'
-                                                                        ? 'bg-blue-600 text-white'
-                                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                                }`}
+                                                                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilters.card === 'Mastercard'
+                                                                    ? 'bg-blue-600 text-white'
+                                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                    }`}
                                                             >
                                                                 Mastercard
                                                             </button>
@@ -528,11 +254,10 @@ export default function Home() {
                                                                 <button
                                                                     key={cat}
                                                                     onClick={() => setActiveFilters({ ...activeFilters, category: activeFilters.category === cat ? null : cat })}
-                                                                    className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                                                        activeFilters.category === cat
-                                                                            ? 'bg-blue-600 text-white'
-                                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                                    }`}
+                                                                    className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilters.category === cat
+                                                                        ? 'bg-blue-600 text-white'
+                                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                        }`}
                                                                 >
                                                                     {cat}
                                                                 </button>
@@ -547,11 +272,10 @@ export default function Home() {
                                                                 <button
                                                                     key={status}
                                                                     onClick={() => setActiveFilters({ ...activeFilters, status: activeFilters.status === status ? null : status })}
-                                                                    className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                                                        activeFilters.status === status
-                                                                            ? 'bg-blue-600 text-white'
-                                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                                    }`}
+                                                                    className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilters.status === status
+                                                                        ? 'bg-blue-600 text-white'
+                                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                        }`}
                                                                 >
                                                                     {status}
                                                                 </button>
@@ -667,9 +391,8 @@ export default function Home() {
                                             <button
                                                 key={index}
                                                 onClick={() => setCurrentCardIndex(index)}
-                                                className={`h-2 cursor-pointer rounded-full transition-all ${
-                                                    index === currentCardIndex ? 'w-6 bg-gray-900' : 'w-2 bg-gray-300'
-                                                }`}
+                                                className={`h-2 cursor-pointer rounded-full transition-all ${index === currentCardIndex ? 'w-6 bg-gray-900' : 'w-2 bg-gray-300'
+                                                    }`}
                                             />
                                         ))}
                                     </div>

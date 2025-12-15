@@ -37,7 +37,28 @@
     "minLength": "Minimum {{count}} characters required",
     "maxLength": "Maximum {{count}} characters allowed",
     "serverError": "Server error. Please try again later.",
-    "notFound": "Not found"
+    "notFound": "Not found",
+    "404": {
+      "title": "Page Not Found",
+      "subtitle": "Oops! The page you're looking for doesn't exist.",
+      "description": "The page you are trying to access might have been removed, had its name changed, or is temporarily unavailable.",
+      "goHome": "Back to Home",
+      "errorCode": "Error 404"
+    },
+    "500": {
+      "title": "Internal Server Error",
+      "subtitle": "Oops! Something went wrong on our end.",
+      "description": "We're experiencing technical difficulties. Our team has been notified and is working to fix the issue.",
+      "tryAgain": "Try Again",
+      "goHome": "Back to Home",
+      "errorCode": "Error 500",
+      "technicalDetails": "Technical Details",
+      "errorMessage": "Error message:",
+      "errorId": "Error ID:",
+      "tip": "Tip:",
+      "contactSupport": "If the problem persists, please contact our support team.",
+      "unexpectedError": "An unexpected error occurred"
+    }
   },
   "dashboard": {
     "title": "AVENIR",

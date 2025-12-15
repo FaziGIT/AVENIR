@@ -1,8 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import chipImage from './assets/chip.png';
 
 type CreditCardProps = {
     cardNumber: string;
@@ -40,7 +42,7 @@ export const CreditCard = ({ cardNumber, expiryDate = '09/28', cardType = 'VISA'
             </div>
 
             <div className="mb-2">
-                <img src="/chip.png" alt="EMV Chip" width="45" height="34" />
+                <Image src={chipImage} alt="EMV Chip" width={45} height={34} />
             </div>
 
             <div className="flex items-end justify-between">

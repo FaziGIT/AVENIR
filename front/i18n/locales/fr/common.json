@@ -37,7 +37,28 @@
     "minLength": "Minimum {{count}} caractères requis",
     "maxLength": "Maximum {{count}} caractères autorisés",
     "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
-    "notFound": "Non trouvé"
+    "notFound": "Non trouvé",
+    "404": {
+      "title": "Page Non Trouvée",
+      "subtitle": "Oups ! La page que vous recherchez n'existe pas.",
+      "description": "La page que vous essayez d'accéder a peut-être été supprimée, son nom a changé ou elle est temporairement indisponible.",
+      "goHome": "Retour à l'Accueil",
+      "errorCode": "Erreur 404"
+    },
+    "500": {
+      "title": "Erreur Interne du Serveur",
+      "subtitle": "Oups ! Quelque chose s'est mal passé de notre côté.",
+      "description": "Nous rencontrons des difficultés techniques. Notre équipe a été informée et travaille à résoudre le problème.",
+      "tryAgain": "Réessayer",
+      "goHome": "Retour à l'Accueil",
+      "errorCode": "Erreur 500",
+      "technicalDetails": "Détails techniques",
+      "errorMessage": "Message d'erreur :",
+      "errorId": "ID de l'erreur :",
+      "tip": "Conseil :",
+      "contactSupport": "Si le problème persiste, veuillez contacter notre équipe de support.",
+      "unexpectedError": "Une erreur inattendue s'est produite"
+    }
   },
   "dashboard": {
     "title": "AVENIR",

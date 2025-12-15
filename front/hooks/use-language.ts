@@ -6,10 +6,9 @@ import { useCallback, useEffect } from 'react';
 export type Language = 'fr' | 'en';
 
 export const useLanguage = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
 
   useEffect(() => {
-    // Charger la langue sauvegardée ou utiliser 'fr' par défaut
     const savedLanguage = localStorage.getItem('language') as Language | null;
     if (savedLanguage && (savedLanguage === 'fr' || savedLanguage === 'en')) {
       i18n.changeLanguage(savedLanguage);
@@ -32,7 +31,9 @@ export const useLanguage = () => {
   }, [i18n.language, changeLanguage]);
 
   return {
+    t,
     language: i18n.language as Language,
+    i18n,
     changeLanguage,
     toggleLanguage,
     isReady: i18n.isInitialized,
