@@ -17,7 +17,7 @@ export default function Error({ error, reset }: ErrorProps) {
     const { t } = useLanguage();
 
     return (
-        <div className="h-screen overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+        <div className="h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
             <ErrorPageHeader />
 
             <main className="mx-auto flex h-[calc(100vh-73px)] max-w-[1400px] items-center justify-center overflow-y-auto p-6">

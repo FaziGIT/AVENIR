@@ -89,5 +89,38 @@
     "saving": "Épargne",
     "yearly": "Annuel",
     "spending": "Dépenses"
+  },
+  "landing": {
+    "product": "Produit",
+    "solution": "Solution",
+    "community": "Communauté",
+    "about": "À propos",
+    "signIn": "Se connecter",
+    "openAccount": "Ouvrir un compte",
+    "hero": {
+      "title": "La banque qui s'adapte à votre vie",
+      "subtitle": "Ouvrez votre compte en quelques minutes. Gérez votre argent simplement, où que vous soyez.",
+      "cta": "Commencer maintenant"
+    },
+    "creditCards": {
+      "title": "Une carte qui vous accompagne au quotidien",
+      "features": {
+        "investment": "Accès aux investissements",
+        "noFees": "Pas de frais cachés",
+        "lowDeposit": "Sans conditions de revenus"
+      },
+      "description": "Payez partout dans le monde, suivez vos dépenses en temps réel et profitez d'avantages exclusifs. Votre carte arrive chez vous en quelques jours.",
+      "cta": "Découvrir la carte"
+    },
+    "footer": {
+      "title": "Rejoignez des milliers d'utilisateurs qui ont choisi la simplicité",
+      "company": "AVENIR",
+      "address": "Financehouder 147-2, 3074 BC Amsterdam KVK",
+      "registration": "numéro d'enregistrement : 433333333 © 2023 Equip Financial Technology B.V.",
+      "privacyPolicy": "Politique de confidentialité",
+      "termsOfService": "Conditions d'utilisation",
+      "downloadAndroid": "Télécharger l'app Android",
+      "downloadIOS": "Télécharger l'app iOS"
+    }
   }
 }

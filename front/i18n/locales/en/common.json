@@ -89,5 +89,38 @@
     "saving": "Saving",
     "yearly": "Yearly",
     "spending": "Spending"
+  },
+  "landing": {
+    "product": "Product",
+    "solution": "Solution",
+    "community": "Community",
+    "about": "About",
+    "signIn": "Sign In",
+    "openAccount": "Open account",
+    "hero": {
+      "title": "Banking that fits your life",
+      "subtitle": "Open your account in minutes. Manage your money simply, wherever you are.",
+      "cta": "Get started"
+    },
+    "creditCards": {
+      "title": "A card that fits your everyday life",
+      "features": {
+        "investment": "Investment access",
+        "noFees": "No hidden fees",
+        "lowDeposit": "No income requirements"
+      },
+      "description": "Pay anywhere in the world, track your spending in real-time, and enjoy exclusive benefits. Your card arrives in a few days.",
+      "cta": "Discover the card"
+    },
+    "footer": {
+      "title": "Join thousands of users who chose simplicity",
+      "company": "AVENIR",
+      "address": "Financehouder 147-2, 3074 BC Amsterdam KVK",
+      "registration": "registration number: 433333333 © 2023 Equip Financial Technology B.V.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "downloadAndroid": "Download Android App",
+      "downloadIOS": "Download iOS App"
+    }
   }
 }

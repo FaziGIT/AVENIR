@@ -68,3 +68,18 @@ body {
   font-feature-settings: "tnum" 1;
 }
 
+/* Europa Grotesque Light Font */
+@font-face {
+  font-family: 'Europa Grotesque';
+  src: url('/fonts/Europa_Grotesque_Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Landing page font */
+.font-europa {
+  font-family: 'Europa Grotesque', system-ui, sans-serif;
+  font-weight: 300;
+}
+
