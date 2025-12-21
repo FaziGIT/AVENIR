@@ -15,7 +15,9 @@
     "confirm": "Confirm",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "send": "Send",
+    "sending": "Sending..."
   },
   "home": {
     "title": "AVENIR",
@@ -88,6 +90,7 @@
     "card": "Card",
     "activity": "Activity",
     "saving": "Saving",
+    "contact": "Contact",
     "yearly": "Yearly",
     "spending": "Spending"
   },
@@ -156,6 +159,77 @@
       "success": "Login successful",
       "successDescription": "Welcome",
       "error": "An error occurred during login"
+    }
+  },
+  "chat": {
+    "conversations": "Conversations",
+    "newConversation": "New conversation",
+    "noConversations": "No conversations",
+    "noMessages": "No messages yet",
+    "selectConversation": "Select a conversation",
+    "selectConversationDescription": "Choose a conversation to start chatting",
+    "sendMessageToStart": "Send a message to start the conversation",
+    "activeDiscussion": "Active discussion",
+    "searchAdvisor": "Search for an advisor...",
+    "noAdvisorAvailable": "No advisor available",
+    "alreadyAssigned": "Already assigned",
+    "message": {
+      "yourMessage": "Your message",
+      "typeYourMessage": "Describe your request...",
+      "typeMessage": "Type your message...",
+      "loadingMessages": "Loading messages...",
+      "newMessage": "New message",
+      "newMessageFrom": "{{name}} sent a message"
+    },
+    "status": {
+      "pending": "Pending",
+      "closed": "Conversation closed",
+      "conversationClosed": "This conversation is closed",
+      "advisorWillRespond": "An advisor will respond to you as soon as possible"
+    },
+    "actions": {
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "transferConversation": "Transfer conversation",
+      "assign": "Assign",
+      "assigning": "Assigning...",
+      "assignAdvisor": "Assign advisor",
+      "closeConversation": "Close conversation"
+    },
+    "modals": {
+      "transfer": {
+        "title": "Transfer conversation",
+        "description": "Select an advisor to transfer this conversation"
+      },
+      "assign": {
+        "title": "Assign advisor",
+        "description": "Select an advisor to take charge of this conversation"
+      }
+    },
+    "notifications": {
+      "conversationCreated": "New conversation",
+      "conversationCreatedBy": "{{name}} created a new conversation",
+      "conversationTransferred": "Conversation transferred",
+      "conversationTransferredDescription": "This conversation has been transferred to another advisor",
+      "advisorAssigned": "Advisor assigned",
+      "advisorAssignedDescription": "An advisor has been assigned to the conversation"
+    },
+    "success": {
+      "title": "Success",
+      "conversationCreated": "Conversation created successfully",
+      "conversationClosed": "The conversation was closed successfully",
+      "conversationTransferred": "The conversation was transferred successfully",
+      "advisorAssigned": "The advisor was assigned successfully"
+    },
+    "errors": {
+      "title": "Error",
+      "loadingChats": "Unable to load conversations",
+      "loadingMessages": "Unable to load messages",
+      "sendingMessage": "Unable to send message",
+      "creatingConversation": "Unable to create conversation",
+      "closingConversation": "Unable to close conversation",
+      "transferringConversation": "Unable to transfer conversation",
+      "assigningAdvisor": "Unable to assign advisor"
     }
   }
 }

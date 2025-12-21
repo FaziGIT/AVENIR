@@ -1,15 +1,18 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { GetUserUseCase } from '../../../../application/usecases/user/GetUserUseCase';
+import { GetUsersUseCase } from '../../../../application/usecases/user/GetUsersUseCase';
 import { AddUserUseCase } from '../../../../application/usecases/user/AddUserUseCase';
-import { AddUserRequest } from '../../../../application/requests/AddUserRequest';
-import { GetUserRequest } from '../../../../application/requests/GetUserRequest';
-import { UserNotFoundError } from '../../../../domain/errors/UserNotFoundError';
-import { UserAlreadyExistsError } from '../../../../domain/errors/UserAlreadyExistsError';
-import { ValidationError } from '../../../../application/errors/ValidationError';
+import { AddUserRequest } from '../../../../application/requests';
+import { GetUserRequest } from '../../../../application/requests';
+import { GetUsersRequest } from '../../../../application/requests';
+import { UserNotFoundError } from '../../../../domain/errors';
+import { UserAlreadyExistsError } from '../../../../domain/errors';
+import { ValidationError } from '../../../../application/errors';
 
 export class UserController {
     constructor(
         private readonly getUserUseCase: GetUserUseCase,
+        private readonly getUsersUseCase: GetUsersUseCase,
         private readonly addUserUseCase: AddUserUseCase,
     ) {}
 
@@ -36,6 +39,23 @@ export class UserController {
                 });
             }
 
+            console.error('Unexpected error:', error);
+            return reply.code(500).send({
+                error: 'Internal server error',
+                message: error instanceof Error ? error.message : 'Unknown error',
+            });
+        }
+    }
+
+    async getUsers(request: FastifyRequest<{ Querystring: { role?: string } }>, reply: FastifyReply) {
+        try {
+            const getUsersRequest: GetUsersRequest = {
+                role: request.query.role,
+            };
+
+            const response = await this.getUsersUseCase.execute(getUsersRequest);
+            return reply.code(200).send(response);
+        } catch (error) {
             console.error('Unexpected error:', error);
             return reply.code(500).send({
                 error: 'Internal server error',

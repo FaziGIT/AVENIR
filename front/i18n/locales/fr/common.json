@@ -15,7 +15,9 @@
     "confirm": "Confirmer",
     "back": "Retour",
     "next": "Suivant",
-    "previous": "Précédent"
+    "previous": "Précédent",
+    "send": "Envoyer",
+    "sending": "Envoi..."
   },
   "home": {
     "title": "AVENIR",
@@ -88,6 +90,7 @@
     "card": "Carte",
     "activity": "Activité",
     "saving": "Épargne",
+    "contact": "Contact",
     "yearly": "Annuel",
     "spending": "Dépenses"
   },
@@ -156,6 +159,77 @@
       "success": "Connexion réussie",
       "successDescription": "Bienvenue",
       "error": "Une erreur est survenue lors de la connexion"
+    }
+  },
+  "chat": {
+    "conversations": "Conversations",
+    "newConversation": "Nouvelle conversation",
+    "noConversations": "Aucune conversation",
+    "noMessages": "Aucun message pour le moment",
+    "selectConversation": "Sélectionnez une conversation",
+    "selectConversationDescription": "Choisissez une conversation pour commencer à discuter",
+    "sendMessageToStart": "Envoyez un message pour démarrer la conversation",
+    "activeDiscussion": "Discussion active",
+    "searchAdvisor": "Rechercher un conseiller...",
+    "noAdvisorAvailable": "Aucun conseiller disponible",
+    "alreadyAssigned": "Déjà assigné",
+    "message": {
+      "yourMessage": "Votre message",
+      "typeYourMessage": "Décrivez votre demande...",
+      "typeMessage": "Tapez votre message...",
+      "loadingMessages": "Chargement des messages...",
+      "newMessage": "Nouveau message",
+      "newMessageFrom": "{{name}} a envoyé un message"
+    },
+    "status": {
+      "pending": "En attente",
+      "closed": "Conversation fermée",
+      "conversationClosed": "Cette conversation est fermée",
+      "advisorWillRespond": "Un conseiller vous répondra dans les plus brefs délais"
+    },
+    "actions": {
+      "transfer": "Transférer",
+      "transferring": "Transfert...",
+      "transferConversation": "Transférer la conversation",
+      "assign": "Assigner",
+      "assigning": "Assignation...",
+      "assignAdvisor": "Assigner un conseiller",
+      "closeConversation": "Fermer la conversation"
+    },
+    "modals": {
+      "transfer": {
+        "title": "Transférer la conversation",
+        "description": "Sélectionnez un conseiller pour transférer cette conversation"
+      },
+      "assign": {
+        "title": "Assigner un conseiller",
+        "description": "Sélectionnez un conseiller pour prendre en charge cette conversation"
+      }
+    },
+    "notifications": {
+      "conversationCreated": "Nouvelle conversation",
+      "conversationCreatedBy": "{{name}} a créé une nouvelle conversation",
+      "conversationTransferred": "Conversation transférée",
+      "conversationTransferredDescription": "Cette conversation a été transférée à un autre conseiller",
+      "advisorAssigned": "Conseiller assigné",
+      "advisorAssignedDescription": "Un conseiller a été assigné à la conversation"
+    },
+    "success": {
+      "title": "Succès",
+      "conversationCreated": "Conversation créée avec succès",
+      "conversationClosed": "La conversation a été fermée avec succès",
+      "conversationTransferred": "La conversation a été transférée avec succès",
+      "advisorAssigned": "Le conseiller a été assigné avec succès"
+    },
+    "errors": {
+      "title": "Erreur",
+      "loadingChats": "Impossible de charger les conversations",
+      "loadingMessages": "Impossible de charger les messages",
+      "sendingMessage": "Impossible d'envoyer le message",
+      "creatingConversation": "Impossible de créer la conversation",
+      "closingConversation": "Impossible de fermer la conversation",
+      "transferringConversation": "Impossible de transférer la conversation",
+      "assigningAdvisor": "Impossible d'assigner le conseiller"
     }
   }
 }

@@ -20,11 +20,12 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const navItems = [
-        { id: 'overview', label: t('dashboard.overview') },
-        { id: 'investment', label: t('dashboard.investment') },
-        { id: 'card', label: t('dashboard.card') },
-        { id: 'activity', label: t('dashboard.activity') },
-        { id: 'saving', label: t('dashboard.saving') },
+        { id: 'overview', label: t('dashboard.overview'), href: '/dashboard' },
+        { id: 'investment', label: t('dashboard.investment'), href: '/dashboard' },
+        { id: 'card', label: t('dashboard.card'), href: '/dashboard' },
+        { id: 'activity', label: t('dashboard.activity'), href: '/dashboard' },
+        { id: 'saving', label: t('dashboard.saving'), href: '/dashboard' },
+        { id: 'contact', label: t('dashboard.contact'), href: '/dashboard/contact' },
     ];
 
     const handleLanguageToggle = () => {
@@ -45,8 +46,9 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                         const shouldShowBackground = displayTab === item.id;
 
                         return (
-                            <button
+                            <Link
                                 key={item.id}
+                                href={item.href}
                                 onClick={() => setActiveTab(item.id)}
                                 onMouseEnter={() => setHoveredTab(item.id)}
                                 onMouseLeave={() => setHoveredTab(null)}
@@ -67,7 +69,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                                     />
                                 )}
                                 {item.label}
-                            </button>
+                            </Link>
                         );
                     })}
                 </nav>

@@ -138,7 +138,7 @@ CREATE TRIGGER update_saving_rates_updated_at BEFORE UPDATE ON saving_rates
 INSERT INTO users (id, first_name, last_name, email, identity_number, passcode, role, state)
 VALUES 
     ('1', 'John', 'Doe', 'john.doe@example.com', '123456789', '$2b$10$YourHashedPasswordHere', 'CLIENT', 'ACTIVE'),
-    ('2', 'Jane', 'Smith', 'jane.smith@example.com', '987654321', '$2b$10$YourHashedPasswordHere', 'ADMIN', 'ACTIVE')
+    ('2', 'Jane', 'Smith', 'jane.smith@example.com', '987654321', '$2b$10$YourHashedPasswordHere', 'DIRECTOR', 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO saving_rates (id, name, rate, min_amount, description)

@@ -1,5 +1,1 @@
-export enum UserRole {
-    DIRECTOR = 'DIRECTOR',
-    ADVISOR = 'ADVISOR',
-    CLIENT = 'CLIENT'
-}
+export { UserRole } from '@avenir/shared/enums/UserRole';
