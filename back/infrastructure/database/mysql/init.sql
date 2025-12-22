@@ -70,23 +70,33 @@ CREATE TABLE IF NOT EXISTS orders (
 -- Table Chats
 CREATE TABLE IF NOT EXISTS chats (
     id VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL,
-    title VARCHAR(255),
+    client_id VARCHAR(255) NOT NULL,
+    advisor_id VARCHAR(255),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('PENDING', 'ACTIVE', 'CLOSED')) DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_chats_user_id (user_id)
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (advisor_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_chats_client_id (client_id),
+    INDEX idx_chats_advisor_id (advisor_id),
+    INDEX idx_chats_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table Messages
 CREATE TABLE IF NOT EXISTS messages (
     id VARCHAR(255) PRIMARY KEY,
     chat_id VARCHAR(255) NOT NULL,
-    sender_type VARCHAR(50) NOT NULL CHECK (sender_type IN ('USER', 'AGENT', 'SYSTEM')),
+    sender_id VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    type VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,
-    INDEX idx_messages_chat_id (chat_id)
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_messages_chat_id (chat_id),
+    INDEX idx_messages_sender_id (sender_id),
+    INDEX idx_messages_is_read (is_read),
+    INDEX idx_messages_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table SavingRates

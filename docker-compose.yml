@@ -14,6 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./back/infrastructure/database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./back/infrastructure/database/postgres/fixtures:/docker-entrypoint-initdb.d/fixtures
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U avenir_user -d avenir_db"]
       interval: 10s
@@ -39,6 +40,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./back/infrastructure/database/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./back/infrastructure/database/mysql/fixtures:/docker-entrypoint-initdb.d/fixtures
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pavenir_password"]
       interval: 10s

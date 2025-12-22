@@ -64,8 +64,9 @@ CREATE TABLE IF NOT EXISTS orders (
 -- Table Chats
 CREATE TABLE IF NOT EXISTS chats (
     id VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255),
+    client_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    advisor_id VARCHAR(255) REFERENCES users(id) ON DELETE SET NULL,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('PENDING', 'ACTIVE', 'CLOSED')) DEFAULT 'PENDING',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -74,10 +75,21 @@ CREATE TABLE IF NOT EXISTS chats (
 CREATE TABLE IF NOT EXISTS messages (
     id VARCHAR(255) PRIMARY KEY,
     chat_id VARCHAR(255) NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    sender_type VARCHAR(50) NOT NULL CHECK (sender_type IN ('USER', 'AGENT', 'SYSTEM')),
+    sender_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    type VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Index pour améliorer les performances
+CREATE INDEX IF NOT EXISTS idx_chats_client_id ON chats(client_id);
+CREATE INDEX IF NOT EXISTS idx_chats_advisor_id ON chats(advisor_id);
+CREATE INDEX IF NOT EXISTS idx_chats_status ON chats(status);
+CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 
 -- Table SavingRates
 CREATE TABLE IF NOT EXISTS saving_rates (
@@ -105,8 +117,6 @@ CREATE INDEX IF NOT EXISTS idx_accounts_user_id ON accounts(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions(account_id);
 CREATE INDEX IF NOT EXISTS idx_loans_user_id ON loans(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
-CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id);
-CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
 CREATE INDEX IF NOT EXISTS idx_actions_user_id ON actions(user_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 

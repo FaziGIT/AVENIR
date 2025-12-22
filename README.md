@@ -4,16 +4,41 @@ Application bancaire avec architecture hexagonale.
 
 ## 🚀 Démarrage
 
+### PostgreSQL (recommandé)
+
 ```bash
 # 1. Démarrer PostgreSQL
 docker compose --profile postgres up -d
 
-# 2. Installer
+# 2. Installer les dépendances
 cd back
 npm install
 cp .env.template .env
 
-# 3. Lancer
+# 3. Charger les fixtures pour avoir des données de test
+docker compose exec postgres psql -U avenir_user -d avenir_db -f /docker-entrypoint-initdb.d/fixtures/users_fixtures.sql
+docker compose exec postgres psql -U avenir_user -d avenir_db -f /docker-entrypoint-initdb.d/fixtures/chat_fixtures.sql
+
+# 4. Lancer le serveur
+npm run dev
+```
+
+### MySQL
+
+```bash
+# 1. Démarrer MySQL
+docker compose --profile mysql up -d
+
+# 2. Installer les dépendances
+cd back
+npm install
+cp .env.template .env
+
+# 3. Charger les fixtures pour avoir des données de test
+docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db < back/infrastructure/database/mysql/fixtures/users_fixtures.sql
+docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db < back/infrastructure/database/mysql/fixtures/chat_fixtures.sql
+
+# 4. Lancer le serveur
 npm run dev
 ```
 
@@ -74,10 +99,36 @@ docker compose --profile mysql up -d
 docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db
 
 # Arrêter
-docker compose down
+docker compose --profile postgres down
+docker compose --profile mysql down
 
-# Réinitialiser
-docker compose down -v
+# Réinitialiser avec suppression des volumes
+docker compose --profile postgres down -v
+docker compose --profile mysql down -v
+```
+
+## Fixtures (Données de test)
+
+Les fixtures permettent de charger des données de test dans la base de données.
+
+### PostgreSQL
+
+```bash
+# Charger les utilisateurs
+docker compose exec postgres psql -U avenir_user -d avenir_db -f /docker-entrypoint-initdb.d/fixtures/users_fixtures.sql
+
+# Charger les chats et messages
+docker compose exec postgres psql -U avenir_user -d avenir_db -f /docker-entrypoint-initdb.d/fixtures/chat_fixtures.sql
+```
+
+### MySQL
+
+```bash
+# Charger les utilisateurs
+docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db < back/infrastructure/database/mysql/fixtures/users_fixtures.sql
+
+# Charger les chats et messages
+docker compose exec mysql mysql -u avenir_user -pavenir_password avenir_db < back/infrastructure/database/mysql/fixtures/chat_fixtures.sql
 ```
 
 ## 📡 API
