@@ -91,7 +91,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
     }, [userMenuOpen]);
 
     return (
-        <header className="border-b bg-white/80 backdrop-blur-sm">
+        <header className="relative z-40 border-b bg-white/80 backdrop-blur-sm">
             <div className="mx-auto flex max-w-[1800px] items-center justify-between px-6 py-4">
                 <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
                     <Image src="/avenir.png" alt="AVENIR" width={100} height={100} className="h-12 w-auto" priority />
@@ -138,7 +138,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                     {mobileMenuOpen ? <X className="h-6 w-6 text-gray-900" /> : <Menu className="h-6 w-6 text-gray-900" />}
                 </button>
 
-                <div className="relative hidden items-center gap-2 rounded-full bg-white p-1 shadow-sm md:flex">
+                <div className="relative z-50 hidden items-center gap-2 rounded-full bg-white p-1 shadow-sm md:flex">
                     <button
                         onMouseEnter={() => setHoveredIcon('search')}
                         onMouseLeave={() => setHoveredIcon(null)}

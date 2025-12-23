@@ -95,7 +95,7 @@ export const NotificationButton = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 top-full z-50 mt-2 w-96 rounded-2xl border border-gray-200 bg-white shadow-2xl"
+              className="absolute right-0 top-full z-60 mt-2 w-96 rounded-2xl border border-gray-200 bg-white shadow-2xl"
             >
               <div className="border-b border-gray-200 p-4">
                 <div className="flex items-center justify-between">
