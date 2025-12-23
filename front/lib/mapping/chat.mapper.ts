@@ -51,10 +51,48 @@ export interface UserApiDto {
  * Mapper pour transformer un ChatApiDto en Chat
  */
 export const mapChatFromApi = (apiChat: ChatApiDto): Chat => {
+  let client: User | undefined;
+  if (apiChat.clientName) {
+    const nameParts = apiChat.clientName.trim().split(/\s+/);
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    client = {
+      id: apiChat.clientId,
+      firstName: firstName,
+      lastName: lastName,
+      email: '',
+      identityNumber: '',
+      role: UserRole.CLIENT,
+      state: UserState.ACTIVE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
+  let advisor: User | null = null;
+  if (apiChat.advisorId && apiChat.advisorName) {
+    const nameParts = apiChat.advisorName.trim().split(/\s+/);
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    advisor = {
+      id: apiChat.advisorId,
+      firstName: firstName,
+      lastName: lastName,
+      email: '',
+      identityNumber: '',
+      role: UserRole.ADVISOR,
+      state: UserState.ACTIVE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
   return {
     id: apiChat.id,
     clientId: apiChat.clientId,
+    client: client,
     advisorId: apiChat.advisorId,
+    advisor: advisor,
     status: apiChat.status,
     lastMessage: apiChat.lastMessage && apiChat.lastMessageAt ? {
       id: '',

@@ -45,7 +45,7 @@ export const ChatHeader = ({ chat, currentUserRole, onBack, onClose, onTransfer,
       case ChatStatus.ACTIVE:
         return t('chat.activeDiscussion');
       case ChatStatus.CLOSED:
-        return t('chat.status.closed');
+        return t('chat.status.closedDiscussion');
       default:
         return t('chat.status.pending');
     }
@@ -69,7 +69,10 @@ export const ChatHeader = ({ chat, currentUserRole, onBack, onClose, onTransfer,
             </div>
             <div>
               <h3 className="font-semibold text-gray-900">
-                {otherUser?.firstName} {otherUser?.lastName}
+                {otherUser
+                    ? `${otherUser.firstName} ${otherUser.lastName}`
+                    : t('chat.noAdvisorAvailable')
+                }
               </h3>
               <p className="text-xs text-gray-500">
                 {getStatusText()}

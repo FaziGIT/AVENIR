@@ -9,7 +9,7 @@ import {TransferChatModal} from '@/components/chat/transfer-chat-modal';
 import {AssignAdvisorModal} from '@/components/chat/assign-advisor-modal';
 import {Chat, Message, UserRole} from '@/types/chat';
 import {motion} from 'framer-motion';
-import {MessageCircle, Plus, Search} from 'lucide-react';
+import {MessageCircle, Plus, Search, X} from 'lucide-react';
 import {DashboardHeader} from '@/components/dashboard-header';
 import {chatApi} from '@/lib/api/chat.api';
 import {useToast} from '@/hooks/use-toast';
@@ -33,6 +33,7 @@ export default function ContactPage() {
   const [activeTab, setActiveTab] = useState('contact');
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showClosedChats, setShowClosedChats] = useState(false);
   const [chats, setChats] = useState<Chat[]>([]);
   const [chatMessages, setChatMessages] = useState<Record<string, Message[]>>({});
   const [isLoadingChats, setIsLoadingChats] = useState(true);
@@ -439,8 +440,63 @@ export default function ContactPage() {
     }
   };
 
+  const filteredChats = chats
+    .filter((chat) => {
+      if (!showClosedChats && chat.status === ChatStatus.CLOSED) {
+        return false;
+      }
 
-  const filteredChats = chats;
+      if (searchQuery.trim() && currentUser) {
+        const query = searchQuery.toLowerCase();
+        let matchFound = false;
+
+        if (currentUser.role === UserRole.CLIENT) {
+          if (chat.advisor) {
+            const advisorFullName = `${chat.advisor.firstName} ${chat.advisor.lastName}`.toLowerCase();
+            if (advisorFullName.includes(query)) {
+              matchFound = true;
+            }
+          }
+        }
+
+        if (currentUser.role === UserRole.ADVISOR || currentUser.role === UserRole.DIRECTOR) {
+          if (chat.client) {
+            const clientFullName = `${chat.client.firstName} ${chat.client.lastName}`.toLowerCase();
+            if (clientFullName.includes(query)) {
+              matchFound = true;
+            }
+          }
+        }
+
+        // Rechercher dans tous les messages du chat
+        if (!matchFound) {
+          const messages = chatMessages[chat.id] || [];
+          if (messages.some(msg => msg.content.toLowerCase().includes(query))) {
+            matchFound = true;
+          }
+        }
+        return matchFound;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const statusOrder = {
+        [ChatStatus.PENDING]: 0,
+        [ChatStatus.ACTIVE]: 1,
+        [ChatStatus.CLOSED]: 2,
+      };
+
+      const statusComparison = statusOrder[a.status] - statusOrder[b.status];
+
+      if (statusComparison === 0) {
+        const dateA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+        const dateB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+        return dateB - dateA;
+      }
+
+      return statusComparison;
+    });
+
   const currentMessages = selectedChat ? chatMessages[selectedChat.id] || [] : [];
 
   if (!currentUser) {
@@ -457,10 +513,16 @@ export default function ContactPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-gray-200 bg-white p-6"
+              className="rounded-2xl border border-gray-200 bg-white p-6 h-[calc(100vh-140px)]"
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">{t('chat.conversations')}</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">{t('chat.conversations')}</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {chats.filter(c => c.status === ChatStatus.PENDING).length} {t('chat.status.pending').toLowerCase()}, {' '}
+                    {chats.filter(c => c.status === ChatStatus.ACTIVE).length} {t('chat.status.active').toLowerCase()}
+                  </p>
+                </div>
                 {currentUser.role === UserRole.CLIENT && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -477,14 +539,70 @@ export default function ContactPage() {
                 <Search className="h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder={t('common.search')}
+                  placeholder={t('chat.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full border-none bg-transparent text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none"
                 />
+                {searchQuery && (
+                  <motion.button
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    onClick={() => setSearchQuery('')}
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-600 transition-all hover:bg-gray-400 hover:text-white active:scale-90"
+                    aria-label="Effacer la recherche"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </motion.button>
+                )}
               </div>
 
-              <div className="space-y-2 max-h-[calc(100vh-400px)] overflow-y-auto">
+              {/* Checkbox pour afficher les conversations fermées */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 transition-colors hover:bg-gray-100"
+              >
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    id="showClosed"
+                    checked={showClosedChats}
+                    onChange={(e) => setShowClosedChats(e.target.checked)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setShowClosedChats(!showClosedChats);
+                      }
+                    }}
+                    className="peer h-4 w-4 cursor-pointer appearance-none rounded border-2 border-gray-300 bg-white transition-all checked:border-blue-500 checked:bg-blue-500 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  />
+                  <svg
+                    className="pointer-events-none absolute left-0 top-0 h-4 w-4 scale-0 text-white transition-transform peer-checked:scale-100"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <label
+                  htmlFor="showClosed"
+                  className="flex-1 cursor-pointer select-none text-sm font-medium text-gray-700"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setShowClosedChats(!showClosedChats);
+                    }
+                  }}
+                  tabIndex={0}
+                >
+                  {t('chat.showClosedConversations')}
+                </label>
+              </motion.div>
+
+              <div className="space-y-2 max-h-[calc(100vh-410px)] overflow-y-auto">
                 {isLoadingChats ? (
                   <div className="py-12 text-center">
                     <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-gray-900"></div>
@@ -493,7 +611,17 @@ export default function ContactPage() {
                 ) : filteredChats.length === 0 ? (
                   <div className="py-12 text-center">
                     <MessageCircle className="mx-auto h-12 w-12 text-gray-300" />
-                    <p className="mt-3 text-sm text-gray-500">{t('chat.noConversations')}</p>
+                    <p className="mt-3 text-sm font-medium text-gray-900">
+                      {searchQuery.trim()
+                        ? t('chat.noConversationsMatchingSearch')
+                        : t('chat.noConversations')
+                      }
+                    </p>
+                    {searchQuery.trim() && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {t('common.search')}: {searchQuery}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   filteredChats.map((chat) => (
@@ -502,6 +630,7 @@ export default function ContactPage() {
                       chat={chat}
                       isActive={selectedChat?.id === chat.id}
                       onClick={() => setSelectedChat(chat)}
+                      currentUserRole={currentUser.role}
                     />
                   ))
                 )}

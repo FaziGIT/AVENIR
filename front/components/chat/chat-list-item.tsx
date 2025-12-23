@@ -1,47 +1,50 @@
 'use client';
 
-import { Chat, ChatStatus } from '@/types/chat';
+import { Chat, ChatStatus, UserRole } from '@/types/chat';
 import { motion } from 'framer-motion';
 import { MessageCircle, Clock, CheckCircle2 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { fr, enUS } from 'date-fns/locale';
+import {formatDistanceToNow} from "date-fns";
 
 interface ChatListItemProps {
   chat: Chat;
   isActive?: boolean;
   onClick: () => void;
+  currentUserRole?: UserRole;
 }
 
-export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => {
+export const ChatListItem = ({ chat, isActive, onClick, currentUserRole }: ChatListItemProps) => {
+  const { t, i18n } = useTranslation();
   const getStatusIcon = (status: ChatStatus) => {
     switch (status) {
-      case 'PENDING':
+      case ChatStatus.PENDING:
         return <Clock className="h-4 w-4 text-amber-500" />;
-      case 'ACTIVE':
+      case ChatStatus.ACTIVE:
         return <MessageCircle className="h-4 w-4 text-blue-500" />;
-      case 'CLOSED':
+      case ChatStatus.CLOSED:
         return <CheckCircle2 className="h-4 w-4 text-gray-400" />;
     }
   };
 
   const getStatusLabel = (status: ChatStatus) => {
     switch (status) {
-      case 'PENDING':
-        return 'En attente';
-      case 'ACTIVE':
-        return 'Actif';
-      case 'CLOSED':
-        return 'Fermé';
+      case ChatStatus.PENDING:
+        return t('chat.status.pending');
+      case ChatStatus.ACTIVE:
+        return t('chat.status.active');
+      case ChatStatus.CLOSED:
+        return t('chat.status.closed');
     }
   };
 
   const getStatusColor = (status: ChatStatus) => {
     switch (status) {
-      case 'PENDING':
+      case ChatStatus.PENDING:
         return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'ACTIVE':
+      case ChatStatus.ACTIVE:
         return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'CLOSED':
+      case ChatStatus.CLOSED:
         return 'bg-gray-50 text-gray-500 border-gray-200';
     }
   };
@@ -56,9 +59,11 @@ export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => 
         return '';
       }
 
+      const locale = i18n.language === 'fr' ? fr : enUS;
+
       return formatDistanceToNow(dateObj, {
         addSuffix: true,
-        locale: fr,
+        locale,
       });
     } catch (error) {
       console.error('Error formatting date:', error);
@@ -66,9 +71,10 @@ export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => 
     }
   };
 
-  const otherUser = chat.client || chat.advisor;
+  const otherUser = currentUserRole === UserRole.CLIENT ? chat.advisor : chat.client;
   const lastMessage = chat.lastMessage;
   const hasUnread = (chat.unreadCount || 0) > 0;
+  const isPending = chat.status === ChatStatus.PENDING;
 
   return (
     <motion.div
@@ -78,6 +84,8 @@ export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => 
       className={`cursor-pointer rounded-xl border p-4 transition-all ${
         isActive
           ? 'border-gray-900 bg-gray-50 shadow-sm'
+          : isPending
+          ? 'border-amber-300 bg-amber-50/30 hover:border-amber-400 hover:shadow-sm'
           : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
       }`}
     >
@@ -85,7 +93,10 @@ export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h4 className="font-semibold text-gray-900 truncate">
-              {otherUser?.firstName} {otherUser?.lastName}
+              {otherUser
+                ? `${otherUser.firstName} ${otherUser.lastName}`
+                : t('chat.noAdvisorAvailable')
+              }
             </h4>
             {hasUnread && (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
@@ -109,11 +120,6 @@ export const ChatListItem = ({ chat, isActive, onClick }: ChatListItemProps) => 
               {getStatusIcon(chat.status)}
               {getStatusLabel(chat.status)}
             </span>
-            {chat.advisor && (
-              <span className="text-xs text-gray-500">
-                Conseiller: {chat.advisor.firstName}
-              </span>
-            )}
           </div>
         </div>
 
