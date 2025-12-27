@@ -13,17 +13,16 @@ import { AnimatedFormSection, ModalButton } from '@/components/ui/modal-helpers'
 import { useLanguage } from '@/hooks/use-language';
 import { motion } from 'framer-motion';
 import { Copy, Check, AlertTriangle } from 'lucide-react';
+import { accountApi, Account } from '@/lib/api/account.api';
+import { useToast } from '@/hooks/use-toast';
+import { AccountType } from '@/types/enums';
 
 type DeleteAccountModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    accounts: Account[];
+    onSuccess?: () => void;
 };
-
-const MOCK_ACCOUNTS = [
-    { value: 'account-1', label: 'Compte Principal' },
-    { value: 'account-2', label: 'Compte Secondaire' },
-    { value: 'account-3', label: 'Compte Épargne Voyage' },
-];
 
 const deleteAccountSchema = z.object({
     selectedAccount: z.string().min(1, 'Vous devez sélectionner un compte'),
@@ -32,8 +31,9 @@ const deleteAccountSchema = z.object({
 
 type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>;
 
-export const DeleteAccountModal = ({ open, onOpenChange }: DeleteAccountModalProps) => {
+export const DeleteAccountModal = ({ open, onOpenChange, accounts, onSuccess }: DeleteAccountModalProps) => {
     const { t } = useLanguage();
+    const { toast } = useToast();
     const [copied, setCopied] = useState(false);
 
     const form = useForm<DeleteAccountFormData>({
@@ -54,7 +54,8 @@ export const DeleteAccountModal = ({ open, onOpenChange }: DeleteAccountModalPro
     const selectedAccount = form.watch('selectedAccount');
     const verificationText = form.watch('verificationText');
 
-    const selectedAccountLabel = MOCK_ACCOUNTS.find(acc => acc.value === selectedAccount)?.label || '';
+    const selectedAccountData = accounts.find(acc => acc.id === selectedAccount);
+    const selectedAccountLabel = selectedAccountData?.name || selectedAccountData?.iban || '';
     const confirmationText = selectedAccount
         ? `${t('dashboard.deleteAccountModal.confirmationText')} : ${selectedAccountLabel}`
         : t('dashboard.deleteAccountModal.confirmationText');
@@ -69,11 +70,38 @@ export const DeleteAccountModal = ({ open, onOpenChange }: DeleteAccountModalPro
     const handleSubmit = async (data: DeleteAccountFormData) => {
         if (!isVerified) return;
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const selectedAccountData = accounts.find(acc => acc.id === data.selectedAccount);
+        if (selectedAccountData?.type === AccountType.CURRENT) {
+            const currentAccountsCount = accounts.filter(acc => acc.type === AccountType.CURRENT).length;
+            if (currentAccountsCount <= 1) {
+                toast({
+                    title: t('common.error'),
+                    description: t('dashboard.deleteAccountModal.cannotDeleteLastCurrent'),
+                    variant: 'destructive',
+                });
+                return;
+            }
+        }
 
-        form.reset();
-        setCopied(false);
-        onOpenChange(false);
+        try {
+            await accountApi.deleteAccount(data.selectedAccount);
+
+            toast({
+                title: 'Succès',
+                description: 'Compte supprimé avec succès',
+            });
+
+            form.reset();
+            setCopied(false);
+            onOpenChange(false);
+            onSuccess?.();
+        } catch (error) {
+            toast({
+                title: t('common.error'),
+                description: error instanceof Error ? error.message : 'Une erreur est survenue',
+                variant: 'destructive',
+            });
+        }
     };
 
     const handleCancel = () => {
@@ -118,11 +146,20 @@ export const DeleteAccountModal = ({ open, onOpenChange }: DeleteAccountModalPro
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {MOCK_ACCOUNTS.map((account) => (
-                                                        <SelectItem key={account.value} value={account.value}>
-                                                            {account.label}
-                                                        </SelectItem>
-                                                    ))}
+                                                    {(() => {
+                                                        const currentAccounts = accounts.filter(account => account.type === AccountType.CURRENT);
+                                                        const isLastCurrentAccount = currentAccounts.length === 1;
+                                                        return currentAccounts.map((account) => (
+                                                            <SelectItem 
+                                                                key={account.id} 
+                                                                value={account.id}
+                                                                disabled={isLastCurrentAccount}
+                                                            >
+                                                                {account.name || account.iban}
+                                                                {isLastCurrentAccount && ` ${t('dashboard.deleteAccountModal.cannotDeleteLastCurrentSuffix')}`}
+                                                            </SelectItem>
+                                                        ));
+                                                    })()}
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />

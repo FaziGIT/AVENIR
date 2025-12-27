@@ -242,6 +242,7 @@ export class UserController {
             // Return only specific fields for /me endpoint
             return reply.code(200).send({
                 user: {
+                    id: response.id,
                     firstName: response.firstName,
                     lastName: response.lastName,
                     email: response.email,

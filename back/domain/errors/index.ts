@@ -9,3 +9,5 @@ export { VerificationTokenExpiredError } from "./VerificationTokenExpiredError";
 export { ChatNotFoundError } from "./ChatNotFoundError";
 export { UnauthorizedChatAccessError } from "./UnauthorizedChatAccessError";
 export { MessageNotFoundError } from "./MessageNotFoundError";
+export { AccountNotFoundError } from "./AccountNotFoundError";
+export { UnauthorizedAccountAccessError } from "./UnauthorizedAccountAccessError";

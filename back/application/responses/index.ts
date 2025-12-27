@@ -6,3 +6,5 @@ export { VerifyEmailResponse, VerifyEmailResponseMapper } from "./VerifyEmailRes
 export { LoginUserResponse, LoginUserResponseMapper } from "./LoginUserResponse";
 export { ChatResponse } from "./ChatResponse";
 export { MessageResponse } from "./MessageResponse";
+export { AddAccountResponse, AddAccountResponseMapper } from "./AddAccountResponse";
+export { GetAccountsResponse, GetAccountsResponseMapper } from "./GetAccountsResponse";

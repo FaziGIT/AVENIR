@@ -104,7 +104,7 @@
       "title": "Ajouter un compte courant",
       "description": "Créez un nouveau compte courant pour gérer vos finances au quotidien.",
       "accountName": "Nom du compte",
-      "accountNamePlaceholder": "Ex: Compte principal, Compte épargne..."
+      "accountNamePlaceholder": "Ex: Compte principal, Compte loirsirs, Compte vacances..."
     },
     "addSavingsModal": {
       "title": "Ajouter un compte d'épargne",
@@ -122,13 +122,17 @@
       "verificationInput": "Tapez le texte de confirmation",
       "verificationPlaceholder": "Collez ou tapez le texte ici",
       "verificationError": "Le texte de confirmation ne correspond pas",
-      "verificationSuccess": "Texte de confirmation valide"
+      "verificationSuccess": "Texte de confirmation valide",
+      "cannotDeleteLastCurrent": "Impossible de supprimer le dernier compte courant. Au moins un compte courant doit rester.",
+      "cannotDeleteLastCurrentSuffix": " (Impossible de supprimer le dernier compte courant)",
+      "deleteAccountTooltip": "Supprimer le compte",
+      "cannotDeleteLastCurrentTooltip": "Impossible de supprimer le dernier compte courant"
     },
     "editAccountNameModal": {
       "title": "Modifier le nom du compte",
       "description": "Changez le nom de votre compte pour mieux l'identifier.",
       "accountName": "Nom du compte",
-      "accountNamePlaceholder": "Ex: Compte Principal, Compte Épargne..."
+      "accountNamePlaceholder": "Ex: Compte Principal, Compte Loisirs, Compte Vacances..."
     },
     "sendMoneyModal": {
       "title": "Envoyer de l'argent",

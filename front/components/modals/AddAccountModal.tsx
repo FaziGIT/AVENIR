@@ -9,10 +9,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { AnimatedFormSection, ModalButton } from '@/components/ui/modal-helpers';
 import { useLanguage } from '@/hooks/use-language';
+import { accountApi } from '@/lib/api/account.api';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { AccountType } from '@/types/enums';
 
 type AddAccountModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onSuccess?: () => void;
 };
 
 const addAccountSchema = z.object({
@@ -21,8 +26,10 @@ const addAccountSchema = z.object({
 
 type AddAccountFormData = z.infer<typeof addAccountSchema>;
 
-export const AddAccountModal = ({ open, onOpenChange }: AddAccountModalProps) => {
+export const AddAccountModal = ({ open, onOpenChange, onSuccess }: AddAccountModalProps) => {
     const { t } = useLanguage();
+    const { user } = useAuth();
+    const { toast } = useToast();
 
     const form = useForm<AddAccountFormData>({
         resolver: zodResolver(addAccountSchema),
@@ -33,15 +40,43 @@ export const AddAccountModal = ({ open, onOpenChange }: AddAccountModalProps) =>
 
     useEffect(() => {
         if (open) {
-            form.reset();
+            form.reset({
+                accountName: '',
+            });
         }
     }, [open, form]);
 
     const handleSubmit = async (data: AddAccountFormData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!user?.id) {
+            toast({
+                title: t('common.error'),
+                description: 'Vous devez être connecté pour créer un compte',
+                variant: 'destructive',
+            });
+            return;
+        }
 
-        form.reset();
-        onOpenChange(false);
+        try {
+            await accountApi.addAccount({
+                name: data.accountName,
+                type: AccountType.CURRENT,
+            });
+
+            toast({
+                title: 'Succès',
+                description: 'Compte créé avec succès',
+            });
+
+            form.reset();
+            onOpenChange(false);
+            onSuccess?.();
+        } catch (error) {
+            toast({
+                title: t('common.error'),
+                description: error instanceof Error ? error.message : 'Une erreur est survenue',
+                variant: 'destructive',
+            });
+        }
     };
 
     const handleCancel = () => {

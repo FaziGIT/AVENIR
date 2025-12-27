@@ -9,3 +9,7 @@ export { SendMessageRequest } from "./SendMessageRequest";
 export { GetChatsRequest } from "./GetChatsRequest";
 export { AssignAdvisorRequest } from "./AssignAdvisorRequest";
 export { TransferChatRequest } from "./TransferChatRequest";
+export { AddAccountRequest } from "./AddAccountRequest";
+export { DeleteAccountRequest } from "./DeleteAccountRequest";
+export { UpdateAccountNameRequest } from "./UpdateAccountNameRequest";
+export { GetAccountsRequest } from "./GetAccountsRequest";

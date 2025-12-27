@@ -9,12 +9,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { AnimatedFormSection, ModalButton } from '@/components/ui/modal-helpers';
 import { useLanguage } from '@/hooks/use-language';
+import { accountApi } from '@/lib/api/account.api';
+import { useToast } from '@/hooks/use-toast';
 
 type EditAccountNameModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    accountId: string;
     currentName: string;
-    onSave?: (newName: string) => void;
+    onSuccess?: () => void;
 };
 
 const editAccountNameSchema = z.object({
@@ -23,8 +26,9 @@ const editAccountNameSchema = z.object({
 
 type EditAccountNameFormData = z.infer<typeof editAccountNameSchema>;
 
-export const EditAccountNameModal = ({ open, onOpenChange, currentName, onSave }: EditAccountNameModalProps) => {
+export const EditAccountNameModal = ({ open, onOpenChange, accountId, currentName, onSuccess }: EditAccountNameModalProps) => {
     const { t } = useLanguage();
+    const { toast } = useToast();
 
     const form = useForm<EditAccountNameFormData>({
         resolver: zodResolver(editAccountNameSchema),
@@ -40,13 +44,23 @@ export const EditAccountNameModal = ({ open, onOpenChange, currentName, onSave }
     }, [open, currentName, form]);
 
     const handleSubmit = async (data: EditAccountNameFormData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        try {
+            await accountApi.updateAccountName(accountId, data.accountName || null);
 
-        if (onSave) {
-            onSave(data.accountName);
+            toast({
+                title: 'Succès',
+                description: 'Nom du compte mis à jour avec succès',
+            });
+
+            onOpenChange(false);
+            onSuccess?.();
+        } catch (error) {
+            toast({
+                title: t('common.error'),
+                description: error instanceof Error ? error.message : 'Une erreur est survenue',
+                variant: 'destructive',
+            });
         }
-
-        onOpenChange(false);
     };
 
     const handleCancel = () => {

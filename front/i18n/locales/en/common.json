@@ -122,7 +122,11 @@
       "verificationInput": "Type the confirmation text",
       "verificationPlaceholder": "Paste or type the text here",
       "verificationError": "Confirmation text does not match",
-      "verificationSuccess": "Valid confirmation text"
+      "verificationSuccess": "Valid confirmation text",
+      "cannotDeleteLastCurrent": "Cannot delete the last current account. At least one current account must remain.",
+      "cannotDeleteLastCurrentSuffix": " (Cannot delete last current account)",
+      "deleteAccountTooltip": "Delete account",
+      "cannotDeleteLastCurrentTooltip": "Cannot delete the last current account"
     },
     "editAccountNameModal": {
       "title": "Edit Account Name",

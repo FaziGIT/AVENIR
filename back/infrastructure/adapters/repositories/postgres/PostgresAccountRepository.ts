@@ -2,12 +2,11 @@ import { Pool } from 'pg';
 import { Account } from '../../../../domain/entities/Account';
 import { AccountRepository } from '../../../../domain/repositories/AccountRepository';
 import { AccountType } from '../../../../domain/enumerations/AccountType';
-import { RowDataPacket } from 'mysql2/promise';
 
 export class PostgresAccountRepository implements AccountRepository {
     constructor(private pool: Pool) { }
 
-    async create(account: Account): Promise<Account> {
+    async add(account: Account): Promise<Account> {
         const query = `
             INSERT INTO accounts (
                 id, user_id, iban, name, type, balance, currency,
@@ -37,12 +36,12 @@ export class PostgresAccountRepository implements AccountRepository {
 
             return this.mapRowToAccount(result.rows[0]);
         } catch (error) {
-            console.error('PostgreSQL error creating account:', error);
+            console.error('PostgreSQL error adding account:', error);
             throw error;
         }
     }
 
-    async findById(id: string): Promise<Account | null> {
+    async getById(id: string): Promise<Account | null> {
         const query = 'SELECT * FROM accounts WHERE id = $1';
 
         try {
@@ -51,24 +50,24 @@ export class PostgresAccountRepository implements AccountRepository {
 
             return this.mapRowToAccount(result.rows[0]);
         } catch (error) {
-            console.error('PostgreSQL error finding account:', error);
+            console.error('PostgreSQL error getting account:', error);
             throw error;
         }
     }
 
-    async findByUserId(userId: string): Promise<Account[]> {
+    async getByUserId(userId: string): Promise<Account[]> {
         const query = 'SELECT * FROM accounts WHERE user_id = $1 ORDER BY created_at DESC';
 
         try {
             const result = await this.pool.query(query, [userId]);
             return result.rows.map(row => this.mapRowToAccount(row));
         } catch (error) {
-            console.error('PostgreSQL error finding accounts by user:', error);
+            console.error('PostgreSQL error getting accounts by user:', error);
             throw error;
         }
     }
 
-    async findByIban(iban: string): Promise<Account | null> {
+    async getByIban(iban: string): Promise<Account | null> {
         const query = 'SELECT * FROM accounts WHERE iban = $1';
 
         try {
@@ -77,12 +76,12 @@ export class PostgresAccountRepository implements AccountRepository {
 
             return this.mapRowToAccount(result.rows[0]);
         } catch (error) {
-            console.error('PostgreSQL error finding account by IBAN:', error);
+            console.error('PostgreSQL error getting account by IBAN:', error);
             throw error;
         }
     }
 
-    async findByCardNumber(cardNumber: string): Promise<Account | null> {
+    async getByCardNumber(cardNumber: string): Promise<Account | null> {
         const query = 'SELECT * FROM accounts WHERE card_number = $1';
 
         try {
@@ -91,7 +90,7 @@ export class PostgresAccountRepository implements AccountRepository {
 
             return this.mapRowToAccount(result.rows[0]);
         } catch (error) {
-            console.error('PostgreSQL error finding account by card number:', error);
+            console.error('PostgreSQL error getting account by card number:', error);
             throw error;
         }
     }
@@ -128,16 +127,16 @@ export class PostgresAccountRepository implements AccountRepository {
         }
     }
 
-    async delete(id: string): Promise<void> {
+    async remove(id: string): Promise<void> {
         try {
             await this.pool.query('DELETE FROM accounts WHERE id = $1', [id]);
         } catch (error) {
-            console.error('PostgreSQL error deleting account:', error);
+            console.error('PostgreSQL error removing account:', error);
             throw error;
         }
     }
 
-    private mapRowToAccount(row: RowDataPacket): Account {
+    private mapRowToAccount(row: any): Account {
         return new Account(
             row.id,
             row.user_id,

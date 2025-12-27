@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Fastify from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
@@ -7,10 +8,12 @@ import { userRoutes } from './routes/user';
 import { authRoutes } from './routes/auth';
 import { chatRoutes } from './routes/chat';
 import { messageRoutes } from './routes/message';
+import { accountRoutes } from './routes/account';
 import { websocketRoutes } from './routes/websocket';
 import { UserController } from './controllers/UserController';
 import { ChatController } from './controllers/ChatController';
 import { MessageController } from './controllers/MessageController';
+import { AccountController } from './controllers/AccountController';
 import { GetUserUseCase } from '@avenir/application/usecases/user/GetUserUseCase';
 import { GetUsersUseCase } from '@avenir/application/usecases/user/GetUsersUseCase';
 import { AddUserUseCase } from '@avenir/application/usecases/user/AddUserUseCase';
@@ -28,6 +31,10 @@ import { RepositoryFactory } from '../../factories/RepositoryFactory';
 import { GetChatByIdUseCase } from "@avenir/application/usecases/chat/GetChatByIdUseCase";
 import { MarkMessageAsReadUseCase } from "@avenir/application/usecases/chat/MarkMessageAsReadUseCase";
 import { MarkChatMessagesAsReadUseCase } from "@avenir/application/usecases/chat/MarkChatMessagesAsReadUseCase";
+import { AddAccountUseCase } from "@avenir/application/usecases/account/AddAccountUseCase";
+import { DeleteAccountUseCase } from "@avenir/application/usecases/account/DeleteAccountUseCase";
+import { UpdateAccountNameUseCase } from "@avenir/application/usecases/account/UpdateAccountNameUseCase";
+import { GetAccountsUseCase } from "@avenir/application/usecases/account/GetAccountsUseCase";
 
 const fastify = Fastify({
     logger: true
@@ -75,6 +82,13 @@ const chatController = new ChatController(
 
 const messageController = new MessageController(sendMessageUseCase, markMessageAsReadUseCase, chatRepository);
 
+// Account
+const addAccountUseCase = new AddAccountUseCase(accountRepository, userRepository);
+const deleteAccountUseCase = new DeleteAccountUseCase(accountRepository);
+const updateAccountNameUseCase = new UpdateAccountNameUseCase(accountRepository);
+const getAccountsUseCase = new GetAccountsUseCase(accountRepository);
+const accountController = new AccountController(addAccountUseCase, deleteAccountUseCase, updateAccountNameUseCase, getAccountsUseCase);
+
 async function setupRoutes() {
     await fastify.register(cors, {
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -91,13 +105,17 @@ async function setupRoutes() {
     await fastify.register(authRoutes, { prefix: '/api/auth', userController });
     await fastify.register(chatRoutes, { prefix: '/api', chatController, messageRepository, chatRepository });
     await fastify.register(messageRoutes, { prefix: '/api', messageController });
+    await fastify.register(accountRoutes, { prefix: '/api', accountController });
+
+    // Route WebSocket
     await fastify.register(websocketRoutes, { prefix: '/api' });
 }
 
 const start = async () => {
     try {
         await setupRoutes();
-        await fastify.listen({ port: 3001, host: '0.0.0.0' });
+        const port = parseInt(process.env.PORT || '3001', 10);
+        await fastify.listen({ port, host: '0.0.0.0' });
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
