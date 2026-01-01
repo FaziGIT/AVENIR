@@ -11,9 +11,7 @@ export class RepositoryFactory {
 
     static createDatabaseContext(): DatabaseContext {
         const dbType: DatabaseType = databaseConfig.type;
-        
-        console.log(`Initialisation ${dbType.toUpperCase()}`);
-        
+
         switch (dbType) {
             case 'postgres':
                 return new PostgresDatabaseContext();
@@ -27,7 +25,6 @@ export class RepositoryFactory {
     static async closeConnections(): Promise<void> {
         const ctx = this.createDatabaseContext();
         await ctx.close();
-        console.log(`Connexions fermées`);
     }
 }
 

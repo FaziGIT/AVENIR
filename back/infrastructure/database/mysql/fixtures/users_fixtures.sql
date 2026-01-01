@@ -250,6 +250,26 @@ VALUES
     NOW()
 ) ON DUPLICATE KEY UPDATE id = id;
 
+-- Compte pour Hugo Laurent
+INSERT INTO accounts (id, user_id, iban, name, type, balance, currency, card_number, card_holder_name, card_expiry_date, card_cvv, saving_rate_id, created_at, updated_at)
+VALUES
+(
+    'acc-client-005-1',
+    'd2e5f6a4-8b1c-7d2e-9f3a-0c4b8d5e1f2a',
+    'FR7612345678901234567890133',
+    'Compte Courant - Hugo Laurent',
+    'CURRENT',
+    1140000.00,
+    'EUR',
+    '4777777777777777',
+    'HUGO LAURENT',
+    '09/30',
+    '456',
+    NULL,
+    DATE_SUB(NOW(), INTERVAL 1 WEEK),
+    NOW()
+) ON DUPLICATE KEY UPDATE id = id;
+
 -- =========================================
 -- Résumé des données insérées
 -- =========================================

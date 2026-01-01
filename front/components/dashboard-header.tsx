@@ -33,7 +33,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
     switch (currentUser?.role) {
         case UserRole.DIRECTOR:
             navItems = [
-                { id: 'investment', label: t('dashboard.investment'), href: '/dashboard' },
+                { id: 'investment', label: t('dashboard.investmentHeader'), href: '/dashboard/investment' },
                 { id: 'activity', label: t('dashboard.activity'), href: '/dashboard' },
                 { id: 'contact', label: t('dashboard.contact'), href: '/dashboard/contact' },
             ];
@@ -49,7 +49,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
         default:
             navItems = [
                 { id: 'overview', label: t('dashboard.overview'), href: '/dashboard' },
-                { id: 'investment', label: t('dashboard.investment'), href: '/dashboard' },
+                { id: 'investment', label: t('dashboard.investmentHeader'), href: '/dashboard/investment' },
                 { id: 'card', label: t('dashboard.card'), href: '/dashboard' },
                 { id: 'activity', label: t('dashboard.activity'), href: '/dashboard' },
                 { id: 'saving', label: t('dashboard.saving'), href: '/dashboard' },
@@ -109,9 +109,8 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                                 onClick={() => setActiveTab(item.id)}
                                 onMouseEnter={() => setHoveredTab(item.id)}
                                 onMouseLeave={() => setHoveredTab(null)}
-                                className={`relative z-10 cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-colors duration-200 ${
-                                    shouldShowBackground ? 'text-white' : 'text-gray-600'
-                                }`}
+                                className={`relative z-10 cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-colors duration-200 ${shouldShowBackground ? 'text-white' : 'text-gray-600'
+                                    }`}
                             >
                                 {shouldShowBackground && (
                                     <motion.div
@@ -296,9 +295,8 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                                             setMobileMenuOpen(false);
                                             router.push(item.href);
                                         }}
-                                        className={`cursor-pointer rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${
-                                            isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'
-                                        }`}
+                                        className={`cursor-pointer rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'
+                                            }`}
                                     >
                                         {item.label}
                                     </button>

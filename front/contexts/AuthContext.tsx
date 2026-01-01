@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isDirector: boolean;
   login: (user: User) => void;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
@@ -93,12 +94,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push('/login');
   }, [router]);
 
+  const isDirector = user?.role === 'DIRECTOR';
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: !!user,
         isLoading,
+        isDirector,
         login,
         logout,
         refreshAuth,

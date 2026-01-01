@@ -9,7 +9,9 @@ NC='\033[0m' # No Color
 
 # Load .env file if it exists
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+    set -a
+    source .env
+    set +a
 fi
 
 # Get database configuration from environment variables with defaults
@@ -120,11 +122,28 @@ echo -e "${GREEN}All migrations applied${NC}"
 
 echo -e "${YELLOW}Loading fixtures (seed data)...${NC}"
 
-# Apply fixtures in order
-for fixture in $DB_DIR/fixtures/*.sql; do
+# Define fixtures in correct dependency order
+# 1. users first (everything depends on users)
+# 2. stocks (portfolios, order_book, trades depend on stocks)
+# 3. portfolios, order_book, trades, user_actions (depend on users and stocks)
+# 4. chat last (depends on users)
+FIXTURES=(
+    "users_fixtures.sql"
+    "stocks_fixtures.sql"
+    "portfolios_fixtures.sql"
+    "order_book_fixtures.sql"
+    "trades_fixtures.sql"
+    "hugo_laurent_trades_fixtures.sql"
+    "user_actions_fixtures.sql"
+    "chat_fixtures.sql"
+)
+
+# Apply fixtures in the specified order
+for fixture_name in "${FIXTURES[@]}"; do
+    fixture="$DB_DIR/fixtures/$fixture_name"
     if [ -f "$fixture" ]; then
-        echo -e "${YELLOW}  Loading $(basename $fixture)...${NC}"
-        
+        echo -e "${YELLOW}  Loading $fixture_name...${NC}"
+
         if [ "$DB_TYPE" = "postgres" ]; then
             docker exec -i $CONTAINER_NAME psql -U $DB_USER -d $DB_NAME < "$fixture"
         else
@@ -132,11 +151,13 @@ for fixture in $DB_DIR/fixtures/*.sql; do
         fi
 
         if [ $? -ne 0 ]; then
-            echo -e "${RED}Failed to load fixture: $(basename $fixture)${NC}"
+            echo -e "${RED}Failed to load fixture: $fixture_name${NC}"
             exit 1
         fi
 
-        echo -e "${GREEN}  Loaded $(basename $fixture)${NC}"
+        echo -e "${GREEN}  Loaded $fixture_name${NC}"
+    else
+        echo -e "${YELLOW}  Skipping $fixture_name (file not found)${NC}"
     fi
 done
 

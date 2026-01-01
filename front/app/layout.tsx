@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
-import { TRPCProvider } from "@/lib/trpc/Provider";
 import { Toaster } from "@/components/ui/toaster";
 import ClientProviders from "@/components/client-providers";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
@@ -36,15 +35,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${manrope.variable} font-sans antialiased overflow-x-hidden`}
       >
-        <TRPCProvider>
-          <AuthProvider>
-            <WebSocketProvider>
-              {children}
-              <Toaster />
-              <ClientProviders />
-            </WebSocketProvider>
-          </AuthProvider>
-        </TRPCProvider>
+        <AuthProvider>
+          <WebSocketProvider>
+            {children}
+            <Toaster />
+            <ClientProviders />
+          </WebSocketProvider>
+        </AuthProvider>
       </body>
     </html>
   );

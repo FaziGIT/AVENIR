@@ -8,7 +8,9 @@ import { authRoutes } from './routes/auth';
 import { chatRoutes } from './routes/chat';
 import { messageRoutes } from './routes/message';
 import { websocketRoutes } from './routes/websocket';
+import { investmentRoutes } from './routes/investment';
 import { UserController } from './controllers/UserController';
+import { InvestmentController } from './controllers/InvestmentController';
 import { ChatController } from './controllers/ChatController';
 import { MessageController } from './controllers/MessageController';
 import { GetUserUseCase } from '@avenir/application/usecases/user/GetUserUseCase';
@@ -28,6 +30,7 @@ import { RepositoryFactory } from '../../factories/RepositoryFactory';
 import { GetChatByIdUseCase } from "@avenir/application/usecases/chat/GetChatByIdUseCase";
 import { MarkMessageAsReadUseCase } from "@avenir/application/usecases/chat/MarkMessageAsReadUseCase";
 import { MarkChatMessagesAsReadUseCase } from "@avenir/application/usecases/chat/MarkChatMessagesAsReadUseCase";
+import { OrderMatchingService } from '@avenir/application/services/OrderMatchingService';
 
 const fastify = Fastify({
     logger: true
@@ -75,6 +78,14 @@ const chatController = new ChatController(
 
 const messageController = new MessageController(sendMessageUseCase, markMessageAsReadUseCase, chatRepository);
 
+// Investment
+const stockRepository = dbContext.stockRepository;
+const portfolioRepository = dbContext.portfolioRepository;
+const tradeRepository = dbContext.tradeRepository;
+const orderBookRepository = dbContext.orderBookRepository;
+const orderMatchingService = new OrderMatchingService(orderBookRepository, tradeRepository, portfolioRepository, accountRepository, stockRepository, userRepository);
+const investmentController = new InvestmentController(stockRepository, portfolioRepository, tradeRepository, accountRepository, userRepository, orderBookRepository, orderMatchingService);
+
 async function setupRoutes() {
     await fastify.register(cors, {
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -92,6 +103,7 @@ async function setupRoutes() {
     await fastify.register(chatRoutes, { prefix: '/api', chatController, messageRepository, chatRepository });
     await fastify.register(messageRoutes, { prefix: '/api', messageController });
     await fastify.register(websocketRoutes, { prefix: '/api' });
+    await fastify.register(investmentRoutes, { prefix: '/api/investment', investmentController, userRepository });
 }
 
 const start = async () => {
@@ -106,10 +118,8 @@ const start = async () => {
 
 const shutdown = async () => {
     try {
-        console.log('Shutting down server...');
         await dbContext.close();
         await fastify.close();
-        console.log('Server shut down successfully');
         process.exit(0);
     } catch (err) {
         console.error('Error during shutdown:', err);

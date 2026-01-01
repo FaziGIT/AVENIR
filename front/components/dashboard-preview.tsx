@@ -84,7 +84,7 @@ export const DashboardPreview = () => {
                         <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-sm">
                             {[
                                 { id: 'overview', label: t('dashboard.overview') },
-                                { id: 'investment', label: t('dashboard.investment') },
+                                { id: 'investment', label: t('dashboard.investmentHeader') },
                                 { id: 'card', label: t('dashboard.card') },
                                 { id: 'activity', label: t('dashboard.activity') },
                                 { id: 'saving', label: t('dashboard.saving') }

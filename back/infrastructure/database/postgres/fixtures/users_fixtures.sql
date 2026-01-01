@@ -8,6 +8,24 @@ SET client_encoding = 'UTF8';
 -- TRUNCATE users CASCADE;
 
 -- =========================================
+-- UTILISATEUR SYSTÈME (pour la liquidité du marché)
+-- =========================================
+
+INSERT INTO users (id, first_name, last_name, email, identity_number, passcode, role, state, created_at, updated_at)
+VALUES (
+    'SYSTEM',
+    'System',
+    'Market Maker',
+    'system@avenir-bank.fr',
+    'SYS001',
+    '$2b$10$v/NDOH5aws1CRVD6gbhgWeiBorIsLagnXSk5kP9ZnRmRYtRMysVc6',
+    'DIRECTOR',
+    'ACTIVE',
+    NOW() - INTERVAL '10 years',
+    NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+-- =========================================
 -- DIRECTEUR (1)
 -- =========================================
 
@@ -240,6 +258,25 @@ VALUES
     NULL,
     NULL,
     NOW() - INTERVAL '2 months'
+) ON CONFLICT (id) DO NOTHING;
+
+-- Compte pour Hugo Laurent
+INSERT INTO accounts (id, user_id, iban, name, type, balance, currency, card_number, card_holder_name, card_expiry_date, card_cvv, saving_rate_id, created_at)
+VALUES
+(
+    'd8e1f2a0-4b7c-3d8e-5f9a-6c0d4e7b1f3a',
+    'd2e5f6a4-8b1c-7d2e-9f3a-0c4b8d5e1f2a',
+    'FR7612345678901234567890133',
+    'Compte Courant - Hugo Laurent',
+    'CURRENT',
+    1140000.00,
+    'EUR',
+    '4777777777777777',
+    'HUGO LAURENT',
+    '09/30',
+    '456',
+    NULL,
+    NOW() - INTERVAL '1 week'
 ) ON CONFLICT (id) DO NOTHING;
 
 -- =========================================
