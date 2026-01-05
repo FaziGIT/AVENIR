@@ -268,7 +268,7 @@ export class InvestmentController {
             }
 
             const userId = request.user.userId;
-            const accounts = await this.accountRepository.findByUserId(userId);
+            const accounts = await this.accountRepository.getByUserId(userId);
 
             const currentAccount = accounts.find(account => account.type === 'CURRENT');
 
@@ -309,7 +309,7 @@ export class InvestmentController {
                 });
             }
 
-            const accounts = await this.accountRepository.findByUserId(userId);
+            const accounts = await this.accountRepository.getByUserId(userId);
             const currentAccount = accounts.find(account => account.type === 'CURRENT');
 
             if (!currentAccount) {
@@ -353,7 +353,7 @@ export class InvestmentController {
             await this.orderMatchingService.matchOrders(stockId);
 
             const updatedOrder = await this.orderBookRepository.getById(buyOrder.id);
-            const updatedAccount = await this.accountRepository.findByUserId(userId);
+            const updatedAccount = await this.accountRepository.getByUserId(userId);
             const newBalance = updatedAccount.find(account => account.type === 'CURRENT')?.balance || 0;
 
             return reply.status(200).send({
@@ -411,7 +411,7 @@ export class InvestmentController {
             }
 
             if (side === 'BID') {
-                const accounts = await this.accountRepository.findByUserId(userId);
+                const accounts = await this.accountRepository.getByUserId(userId);
                 const currentAccount = accounts.find(account => account.type === 'CURRENT');
 
                 if (!currentAccount) {

@@ -230,7 +230,7 @@ export class OrderMatchingService {
     }
 
     private async updateAccount(userId: string, amount: number): Promise<void> {
-        const accounts = await this.accountRepository.findByUserId(userId);
+        const accounts = await this.accountRepository.getByUserId(userId);
         const currentAccount = accounts.find(account => account.type === 'CURRENT');
 
         if (currentAccount) {
