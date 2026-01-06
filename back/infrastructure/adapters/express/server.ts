@@ -247,7 +247,7 @@ function setupRoutes() {
     app.use('/api', chatRoutes(chatController, messageRepository, chatRepository));
     app.use('/api', messageRoutes(messageController));
     app.use('/api', accountRoutes(accountController));
-    app.use('/api', newsRoutes(newsController));
+    app.use('/api/news', newsRoutes(newsController));
     app.use('/api', notificationRoutes(notificationController));
     app.use('/api', loanRoutes(loanController));
     app.use('/api', websocketRoutes());
