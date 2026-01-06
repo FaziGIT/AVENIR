@@ -249,7 +249,7 @@ function setupRoutes() {
     app.use('/api', accountRoutes(accountController));
     app.use('/api/news', newsRoutes(newsController));
     app.use('/api', notificationRoutes(notificationController));
-    app.use('/api', loanRoutes(loanController));
+    app.use('/api/loans', loanRoutes(loanController));
     app.use('/api', websocketRoutes());
     app.use('/api/investment', investmentRoutes(investmentController, userRepository));
     app.use('/api', sseRoutes(sseService));

@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { LoanResponse } from '../../../../application/responses/LoanResponse';
 import { UserRole } from '@avenir/shared/enums';
 import { UserRepository } from '../../../../domain/repositories/UserRepository';
+import { UserNotFoundError, ClientHasNoAccountError } from '../../../../domain/errors';
 
 export class LoanController {
   constructor(
@@ -61,6 +62,18 @@ export class LoanController {
         });
       }
 
+      if (error instanceof UserNotFoundError) {
+        return reply.code(404).send({
+          error: error.message,
+        });
+      }
+
+      if (error instanceof ClientHasNoAccountError) {
+        return reply.code(400).send({
+          error: error.message,
+        });
+      }
+
       return reply.code(500).send({
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -108,8 +121,7 @@ export class LoanController {
 
       if (!user) {
         return reply.code(404).send({
-          error: 'User not found',
-          message: 'User not found',
+          error: new UserNotFoundError(request.user.userId).message,
         });
       }
 
