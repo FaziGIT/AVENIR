@@ -8,8 +8,8 @@ INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_int
 VALUES (
   'loan-001',
   'Crédit immobilier',
-  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e',
-  'e5f6a7b8-9c0d-41e2-bf4a-5c6d7e8f9a0b',
+  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e', -- Marie Martin (advisor)
+  'e5f6a7b8-9c0d-41e2-bf4a-5c6d7e8f9a0b', -- Clement Tine (CLIENT001)
   200000.00,
   240,
   3.50,
@@ -18,20 +18,21 @@ VALUES (
   253147.20,
   52427.20,
   720.00,
-  0.00,
+  13712.14, -- 13 mensualités payées (13 * 1054.78)
   'ACTIVE',
-  NOW() - INTERVAL '5 minutes',
+  '2024-12-15 10:00:00+00', -- Créé mi-décembre 2024
   NOW(),
-  NOW() - INTERVAL '5 minutes',
-  NOW() + INTERVAL '2 minutes'
+  '2024-12-15 10:00:00+00',
+  '2026-02-01 10:00:00+00'
 );
--- Loan 2: Jean Dupont - Crédit auto (advisor: Marie Martin)
+
+-- Loan 2: Clement Tine (CLIENT001) - Crédit auto DEFAULTED (échéance impayée)
 INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
 VALUES (
   'loan-002',
   'Crédit automobile',
-  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e',
-  'f6a7b8c9-0d1e-42f3-8f5b-6d7e8f9a0b1c',
+  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e', -- Marie Martin
+  'e5f6a7b8-9c0d-41e2-bf4a-5c6d7e8f9a0b', -- Clement Tine (CLIENT001)
   25000.00,
   60,
   4.00,
@@ -40,20 +41,21 @@ VALUES (
   28125.00,
   2875.00,
   125.00,
-  0.00,
-  'ACTIVE',
-  NOW() - INTERVAL '10 minutes',
+  4687.50, -- 10 mensualités payées (10 * 468.75)
+  'DEFAULTED',
+  '2025-02-20 10:00:00+00', -- Créé fin février 2025
   NOW(),
-  NOW() - INTERVAL '10 minutes',
-  NOW() + INTERVAL '3 minutes'
+  '2025-02-20 10:00:00+00',
+  '2026-02-01 10:00:00+00' -- Prochaine échéance au 1er février 2026
 );
--- Loan 3: Emma Leroy - Crédit travaux (advisor: Thomas Bernard)
+
+-- Loan 3: Jean Dupont (CLIENT002) - Crédit travaux ACTIF (31 mois payés / 120)
 INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
 VALUES (
   'loan-003',
   'Crédit travaux',
-  'c3d4e5f6-7a8b-4c9d-9e2f-3a4b5c6d7e8f',
-  'a7b8c9d0-1e2f-43a4-9f6c-7e8f9a0b1c2d',
+  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e', -- Marie Martin
+  'f6a7b8c9-0d1e-42f3-8f5b-6d7e8f9a0b1c', -- Jean Dupont (CLIENT002)
   50000.00,
   120,
   3.80,
@@ -62,20 +64,21 @@ VALUES (
   60500.40,
   10300.40,
   200.00,
-  0.00,
+  15629.27, -- 31 mensualités payées (31 * 504.17)
   'ACTIVE',
-  NOW() - INTERVAL '15 minutes',
+  '2023-06-15 10:00:00+00', -- Créé mi-juin 2023
   NOW(),
-  NOW() - INTERVAL '15 minutes',
-  NOW() + INTERVAL '1 minute'
+  '2023-06-15 10:00:00+00',
+  '2026-02-01 10:00:00+00'
 );
--- Loan 4: Lucas Moreau - Crédit personnel (advisor: Thomas Bernard)
+
+-- Loan 4: Emma Leroy (CLIENT003) - Crédit personnel COMPLETED (totalement remboursé)
 INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
 VALUES (
   'loan-004',
   'Crédit personnel',
-  'c3d4e5f6-7a8b-4c9d-9e2f-3a4b5c6d7e8f',
-  'b8c9d0e1-2f3a-44b5-af7d-8f9a0b1c2d3e',
+  'c3d4e5f6-7a8b-4c9d-9e2f-3a4b5c6d7e8f', -- Thomas Bernard
+  'a7b8c9d0-1e2f-43a4-9f6c-7e8f9a0b1c2d', -- Emma Leroy (CLIENT003)
   15000.00,
   48,
   5.00,
@@ -84,20 +87,21 @@ VALUES (
   16599.84,
   1532.34,
   67.50,
-  0.00,
-  'ACTIVE',
-  NOW() - INTERVAL '7 minutes',
-  NOW(),
-  NOW() - INTERVAL '7 minutes',
-  NOW() + INTERVAL '4 minutes'
+  16599.84, -- Totalement remboursé
+  'COMPLETED',
+  '2021-12-10 10:00:00+00', -- Créé en décembre 2021
+  '2025-12-10 10:00:00+00', -- Soldé en décembre 2025
+  '2021-12-10 10:00:00+00',
+  NULL -- Pas de prochaine échéance (soldé)
 );
--- Loan 5: Léa Simon - Crédit étudiant (advisor: Sophie Dubois)
+
+-- Loan 5: Lucas Moreau (CLIENT004) - Crédit étudiant ACTIF (25 mois payés / 60)
 INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
 VALUES (
   'loan-005',
   'Crédit étudiant',
-  'd4e5f6a7-8b9c-4d0e-af3a-4b5c6d7e8f9a',
-  'c9d0e1f2-3a4b-45c6-bf8e-9a0b1c2d3e4f',
+  'c3d4e5f6-7a8b-4c9d-9e2f-3a4b5c6d7e8f', -- Thomas Bernard
+  'b8c9d0e1-2f3a-44b5-af7d-8f9a0b1c2d3e', -- Lucas Moreau (CLIENT004)
   10000.00,
   60,
   2.50,
@@ -106,13 +110,60 @@ VALUES (
   10675.20,
   645.20,
   30.00,
-  0.00,
+  4448.00, -- 25 mensualités payées (25 * 177.92)
   'ACTIVE',
-  NOW() - INTERVAL '12 minutes',
+  '2023-12-10 10:00:00+00', -- Créé en décembre 2023
   NOW(),
-  NOW() - INTERVAL '12 minutes',
-  NOW() + INTERVAL '5 minutes'
+  '2023-12-10 10:00:00+00',
+  '2026-02-01 10:00:00+00'
 );
+
+-- Loan 6: Léa Simon (CLIENT005) - Crédit renovation DEFAULTED (échéance de novembre impayée)
+INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
+VALUES (
+  'loan-006',
+  'Crédit rénovation',
+  'd4e5f6a7-8b9c-4d0e-af3a-4b5c6d7e8f9a', -- Sophie Dubois
+  'c9d0e1f2-3a4b-45c6-bf8e-9a0b1c2d3e4f', -- Léa Simon (CLIENT005)
+  30000.00,
+  84,
+  4.20,
+  0.38,
+  403.57,
+  33900.00,
+  3786.00,
+  114.00,
+  2421.42, -- 6 mensualités payées (6 * 403.57)
+  'DEFAULTED',
+  '2025-06-10 10:00:00+00', -- Créé en juin 2025
+  NOW(),
+  '2025-06-10 10:00:00+00',
+  '2026-02-01 10:00:00+00' -- Prochaine échéance au 1er février 2026
+);
+
+-- Loan 7: Jean Dupont (CLIENT002) - Crédit voiture ACTIF (tout récent, 0 mois payé)
+INSERT INTO loans (id, name, advisor_id, client_id, amount, duration, annual_interest_rate, insurance_rate, monthly_payment, total_cost, total_interest, insurance_cost, paid_amount, status, created_at, updated_at, delivered_at, next_payment_date)
+VALUES (
+  'loan-007',
+  'Crédit voiture',
+  'b2c3d4e5-6f7a-4b9c-8d1e-2f3a4b5c6d7e', -- Marie Martin
+  'f6a7b8c9-0d1e-42f3-8f5b-6d7e8f9a0b1c', -- Jean Dupont (CLIENT002)
+  18000.00,
+  48,
+  4.50,
+  0.42,
+  410.25,
+  19692.00,
+  1616.00,
+  76.00,
+  0.00, -- Tout récent, aucune mensualité payée
+  'ACTIVE',
+  '2025-12-20 10:00:00+00', -- Créé fin décembre 2025
+  NOW(),
+  '2025-12-20 10:00:00+00',
+  '2026-02-01 10:00:00+00'
+);
+
 -- Display summary
 SELECT
     'Crédits créés' as type,
@@ -120,8 +171,18 @@ SELECT
     SUM(amount) as total_amount,
     AVG(monthly_payment) as avg_monthly_payment
 FROM loans;
+
 SELECT
-    'Crédits par conseiller' as type,
+    'Par statut' as type,
+    status,
+    COUNT(*) as count,
+    SUM(amount) as total_amount
+FROM loans
+GROUP BY status
+ORDER BY status;
+
+SELECT
+    'Par conseiller' as type,
     u.first_name || ' ' || u.last_name as advisor_name,
     COUNT(l.id) as loan_count,
     SUM(l.amount) as total_amount

@@ -12,9 +12,9 @@ export class MySQLLoanRepository implements LoanRepository {
         annual_interest_rate, insurance_rate, monthly_payment,
         total_cost, total_interest, insurance_cost,
         paid_amount,
-        status, created_at, updated_at, next_payment_date, delivered_at
+        status, created_at, updated_at, next_payment_date
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -35,7 +35,6 @@ export class MySQLLoanRepository implements LoanRepository {
       loan.createdAt,
       loan.updatedAt,
       loan.nextPaymentDate || null,
-      loan.deliveredAt || null,
     ];
 
     await this.pool.execute(query, values);
@@ -79,7 +78,7 @@ export class MySQLLoanRepository implements LoanRepository {
     const query = `
       UPDATE loans
       SET paid_amount = ?, status = ?, updated_at = ?, 
-          next_payment_date = ?, delivered_at = ?
+          next_payment_date = ?
       WHERE id = ?
     `;
 
@@ -88,7 +87,6 @@ export class MySQLLoanRepository implements LoanRepository {
       loan.status,
       loan.updatedAt,
       loan.nextPaymentDate || null,
-      loan.deliveredAt || null,
       loan.id,
     ];
 
@@ -121,7 +119,6 @@ export class MySQLLoanRepository implements LoanRepository {
       row.status,
       new Date(row.created_at),
       new Date(row.updated_at),
-      row.delivered_at ? new Date(row.delivered_at) : undefined,
       row.next_payment_date ? new Date(row.next_payment_date) : undefined,
     );
   }

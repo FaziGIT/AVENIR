@@ -248,7 +248,7 @@ export default function LoansPage() {
                         </div>
                         <p className="mt-2 flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="h-4 w-4" />
-                          {t('clients.loan.grantedOn')} {formatDate(loan.startDate)}
+                          {t('clients.loan.grantedOn')} {formatDate(loan.createdAt)}
                         </p>
                       </div>
                       <div className="text-right">

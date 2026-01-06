@@ -21,15 +21,14 @@ export class LoanResponse {
     public readonly status: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-    public readonly deliveredAt?: Date,
     public readonly nextPaymentDate?: Date,
     public readonly endDate?: Date,
   ) {}
 
   static fromLoan(loan: Loan): LoanResponse {
     let endDate: Date | undefined;
-    if (loan.deliveredAt) {
-      endDate = new Date(loan.deliveredAt);
+    if (loan.createdAt) {
+      endDate = new Date(loan.createdAt);
       endDate.setMonth(endDate.getMonth() + loan.duration + 1); // +1 mois pour la première échéance
     }
 
@@ -53,7 +52,6 @@ export class LoanResponse {
       loan.status,
       loan.createdAt,
       loan.updatedAt,
-      loan.deliveredAt,
       loan.nextPaymentDate,
       endDate,
     );

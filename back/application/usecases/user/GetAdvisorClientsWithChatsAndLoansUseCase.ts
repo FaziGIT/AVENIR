@@ -62,7 +62,7 @@ export class GetAdvisorClientsWithChatsAndLoansUseCase {
                         };
                     })),
                     loans: sortedLoans.map(loan => {
-                        const startDate = loan.deliveredAt || loan.createdAt;
+                        const startDate = loan.createdAt;
                         const endDate = new Date(startDate);
                         endDate.setMonth(endDate.getMonth() + loan.duration);
 

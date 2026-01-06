@@ -17,7 +17,6 @@ export class Loan {
         public readonly createdAt: Date,
         public readonly updatedAt: Date,
         public readonly nextPaymentDate?: Date,
-        public readonly deliveredAt?: Date,
     ) {}
 
     get remainingPayment(): number {

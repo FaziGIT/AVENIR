@@ -20,7 +20,6 @@ export interface LoanApiResponse {
   status: string;
   createdAt: Date;
   updatedAt: Date;
-  deliveredAt?: Date;
   nextPaymentDate?: Date;
   endDate?: Date;
 }

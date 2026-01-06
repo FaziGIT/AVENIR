@@ -360,7 +360,13 @@ export const ClientDetailsModal = ({
                                     </span>
                                   </div>
                                   <p className="mt-1 text-sm text-gray-600">
-                                    {t('clients.since')} {formatDate(loan.startDate)}
+                                    {t('clients.since')} {formatDate(loan.createdAt)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-xs text-gray-500">{t('clients.loan.monthlyPayment')}</p>
+                                  <p className="financial-amount text-2xl font-bold text-gray-900">
+                                    {formatCurrency(loan.monthlyPayment)}
                                   </p>
                                 </div>
                               </div>

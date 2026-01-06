@@ -65,8 +65,7 @@ export class CreateLoanUseCase {
       LoanStatus.ACTIVE,
       now,
       now,
-      nextPayment,
-      now
+      nextPayment
     );
 
     const createdLoan = await this.loanRepository.createLoan(loan);

@@ -30,7 +30,13 @@ export class ProcessMonthlyPaymentsUseCase {
     }
 
     async execute(isManual: boolean = false, advisorName?: string): Promise<void> {
-        const loansToProcess = await this.getLoansToProcess();
+        let loansToProcess: Loan[];
+
+        if (isManual) {
+            loansToProcess = await this.loanRepository.getLoansByStatus(LoanStatus.DEFAULTED);
+        } else {
+            loansToProcess = await this.getLoansToProcess();
+        }
 
         for (const loan of loansToProcess) {
             try {
@@ -79,8 +85,7 @@ export class ProcessMonthlyPaymentsUseCase {
                 LoanStatus.DEFAULTED,
                 loan.createdAt,
                 new Date(),
-                loan.nextPaymentDate,
-                loan.deliveredAt
+                loan.nextPaymentDate
             );
 
             await this.loanRepository.updateLoan(defaultedLoan);
@@ -150,8 +155,7 @@ export class ProcessMonthlyPaymentsUseCase {
             newStatus,
             loan.createdAt,
             new Date(),
-            nextPayment,
-            loan.deliveredAt
+            nextPayment
         );
 
         await this.loanRepository.updateLoan(updatedLoan);
