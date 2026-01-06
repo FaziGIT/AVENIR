@@ -245,7 +245,7 @@ function setupRoutes() {
     app.use('/api', userRoutes(userController));
     app.use('/api/auth', authRoutes(userController));
     app.use('/api/chats', chatRoutes(chatController));
-    app.use('/api', messageRoutes(messageController));
+    app.use('/api/messages', messageRoutes(messageController));
     app.use('/api', accountRoutes(accountController));
     app.use('/api/news', newsRoutes(newsController));
     app.use('/api/notifications', notificationRoutes(notificationController));
