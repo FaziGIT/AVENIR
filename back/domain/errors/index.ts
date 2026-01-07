@@ -3,6 +3,7 @@ export { UserNotFoundError } from "./UserNotFoundError";
 export { UserAlreadyExistsError } from "./UserAlreadyExistsError";
 export { InvalidCredentialsError } from "./InvalidCredentialsError";
 export { InactiveAccountError } from "./InactiveAccountError";
+export { BannedAccountError } from "./BannedAccountError";
 export { InvalidVerificationTokenError } from "./InvalidVerificationTokenError";
 export { EmailAlreadyVerifiedError } from "./EmailAlreadyVerifiedError";
 export { VerificationTokenExpiredError } from "./VerificationTokenExpiredError";

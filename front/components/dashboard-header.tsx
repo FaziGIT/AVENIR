@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, User, Menu, X, LogOut } from 'lucide-react';
+import { Search, User, Menu, X, LogOut, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/hooks/use-language';
@@ -14,9 +14,10 @@ import { NotificationButton } from '@/components/notifications/notification-butt
 interface DashboardHeaderProps {
     activeTab: string;
     setActiveTab: (tab: string) => void;
+    onDeleteAccount?: () => void;
 }
 
-export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProps) => {
+export const DashboardHeader = ({ activeTab, setActiveTab, onDeleteAccount }: DashboardHeaderProps) => {
     const { t, i18n, toggleLanguage } = useLanguage();
     const { logout, user: currentUser } = useAuth();
     const router = useRouter();
@@ -32,6 +33,7 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
         case UserRole.DIRECTOR:
             navItems = [
                 { id: 'investment', label: t('dashboard.investmentHeader'), href: '/dashboard/investment' },
+                { id: 'clients', label: t('dashboard.clients'), href: '/dashboard/clients' },
                 { id: 'contact', label: t('dashboard.contact'), href: '/dashboard/contact' },
             ];
             break;
@@ -203,6 +205,23 @@ export const DashboardHeader = ({ activeTab, setActiveTab }: DashboardHeaderProp
                                 className="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl"
                             >
                                 <div className="py-1">
+                                    {/* Supprimer mon compte (uniquement pour les clients) */}
+                                    {currentUser?.role === UserRole.CLIENT && onDeleteAccount && (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    setUserMenuOpen(false);
+                                                    onDeleteAccount();
+                                                }}
+                                                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                                <span className="font-medium">{t('account.deleteAccount.button')}</span>
+                                            </button>
+                                            <div className="border-t border-gray-100"></div>
+                                        </>
+                                    )}
+
                                     {/* Déconnexion */}
                                     <button
                                         onClick={() => {

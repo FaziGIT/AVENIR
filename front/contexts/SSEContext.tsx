@@ -133,7 +133,8 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 SSEEventType.NEWS_CREATED,
                 SSEEventType.NEWS_DELETED,
                 SSEEventType.NOTIFICATION_CREATED,
-                SSEEventType.LOAN_CREATED
+                SSEEventType.LOAN_CREATED,
+                SSEEventType.USER_BANNED
             ];
 
             eventTypes.forEach(eventType => {
@@ -142,6 +143,55 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                         const data = JSON.parse(event.data);
                         const sseEvent: SSEEvent = { type: eventType, data };
                         console.log(`[SSE] Événement reçu: ${eventType}`, data);
+
+                        if (eventType === SSEEventType.USER_BANNED) {
+
+                            // Fermer la connexion SSE
+                            if (eventSourceRef.current) {
+                                eventSourceRef.current.close();
+                                eventSourceRef.current = null;
+                            }
+
+                            fetch(`${API_BASE_URL}/api/auth/logout`, {
+                                method: 'POST',
+                                credentials: 'include',
+                            }).finally(() => {
+                                // Nettoyer les cookies
+                                document.cookie.split(";").forEach((c) => {
+                                    document.cookie = c
+                                        .replace(/^ +/, "")
+                                        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                                });
+
+                                window.location.href = '/banned';
+                            });
+
+                            return;
+                        }
+
+                        if (eventType === SSEEventType.USER_DELETED) {
+
+                            // Fermer la connexion SSE
+                            if (eventSourceRef.current) {
+                                eventSourceRef.current.close();
+                                eventSourceRef.current = null;
+                            }
+
+                            fetch(`${API_BASE_URL}/api/auth/logout`, {
+                                method: 'POST',
+                                credentials: 'include',
+                            }).finally(() => {
+                                // Nettoyer les cookies
+                                document.cookie.split(";").forEach((c) => {
+                                    document.cookie = c
+                                        .replace(/^ +/, "")
+                                        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                                });
+                                window.location.href = '/login';
+                            });
+
+                            return;
+                        }
 
                         let callbackIndex = 0;
                         subscribersRef.current.forEach(callback => {
@@ -241,7 +291,7 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
 };
 
-export const useSSE = () => {
+export const useSSE = (): SSEContextType => {
     const context = useContext(SSEContext);
     if (context === undefined) {
         throw new Error('useSSE must be used within a SSEProvider');

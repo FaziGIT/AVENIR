@@ -17,6 +17,7 @@ const ROUTES_WHITELIST: Record<UserRole, string[]> = {
   ],
   DIRECTOR: [
     '/dashboard/investment',
+    '/dashboard/clients',
     '/dashboard/contact',
   ],
 };
@@ -28,9 +29,10 @@ const PUBLIC_ROUTES = [
   '/verify-email',
   '/not-found',
   '/error',
+  '/banned',
 ];
 
-async function getUserRole(accessToken: string): Promise<UserRole | null> {
+async function getUserInfo(accessToken: string): Promise<{ role: UserRole | null; state: string | null }> {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const response = await fetch(`${API_URL}/api/auth/me`, {
@@ -40,13 +42,16 @@ async function getUserRole(accessToken: string): Promise<UserRole | null> {
     });
 
     if (!response.ok) {
-      return null;
+      return { role: null, state: null };
     }
 
     const data = await response.json();
-    return data?.user?.role || null;
+    return {
+      role: data?.user?.role || null,
+      state: data?.user?.state || null,
+    };
   } catch {
-    return null;
+    return { role: null, state: null };
   }
 }
 
@@ -71,35 +76,55 @@ export async function middleware(request: NextRequest) {
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+  const isBannedPage = pathname === '/banned';
 
-  if (isAuthenticated && isAuthPage) {
-    const role = await getUserRole(accessToken);
-    const dashboardRoute = role ? getDashboardRouteByRole(role) : '/dashboard';
-    return NextResponse.redirect(new URL(dashboardRoute, request.url));
-  }
+  if (isAuthenticated) {
+    const { role, state } = await getUserInfo(accessToken);
 
-  if (isAuthenticated && pathname === '/dashboard') {
-    const role = await getUserRole(accessToken);
-    if (role && role !== 'CLIENT') {
-      const dashboardRoute = getDashboardRouteByRole(role);
+    if (!role && !state) {
+      // Le compte a été supprimé, permettre l'accès aux pages publiques
+      if (isPublicRoute) {
+        return NextResponse.next();
+      }
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    if (state === 'BANNED') {
+      if (!isBannedPage && pathname !== '/login') {
+        return NextResponse.redirect(new URL('/banned', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    if (isBannedPage) {
+      const dashboardRoute = role ? getDashboardRouteByRole(role) : '/dashboard';
       return NextResponse.redirect(new URL(dashboardRoute, request.url));
     }
+
+    if (isAuthPage) {
+      const dashboardRoute = role ? getDashboardRouteByRole(role) : '/dashboard';
+      return NextResponse.redirect(new URL(dashboardRoute, request.url));
+    }
+
+    if (pathname === '/dashboard') {
+      if (role && role !== 'CLIENT') {
+        const dashboardRoute = getDashboardRouteByRole(role);
+        return NextResponse.redirect(new URL(dashboardRoute, request.url));
+      }
+    }
+
+    if (!isRouteAllowed(pathname, role)) {
+      return NextResponse.redirect(new URL('/not-found', request.url));
+    }
+
+    return NextResponse.next();
   }
 
   if (isPublicRoute) {
     return NextResponse.next();
   }
 
-  if (!isAuthenticated) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  const role = await getUserRole(accessToken);
-  if (!isRouteAllowed(pathname, role)) {
-    return NextResponse.redirect(new URL('/not-found', request.url));
-  }
-
-  return NextResponse.next();
+  return NextResponse.redirect(new URL('/login', request.url));
 }
 
 export const config = {

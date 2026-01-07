@@ -86,10 +86,53 @@ export async function userRoutes(
     );
 
     fastify.get(
+        '/directors/:directorId/clients',
+        { preHandler: authMiddleware },
+        async (request, reply) => {
+            return userController.getAllClientsWithDetails(request as any, reply);
+        }
+    );
+
+    fastify.get(
         '/advisors/:advisorId/clients/:clientId/check',
         { preHandler: authMiddleware },
         async (request, reply) => {
             return userController.checkClientAdvisor(request as any, reply);
+        }
+    );
+
+    fastify.put(
+        '/users/:userId/ban',
+        { preHandler: authMiddleware },
+        async (request, reply) => {
+            return userController.banUser(request as any, reply);
+        }
+    );
+
+    fastify.put(
+        '/users/:userId/activate',
+        { preHandler: authMiddleware },
+        async (request, reply) => {
+            return userController.activateUser(request as any, reply);
+        }
+    );
+
+    fastify.delete(
+        '/users/:userId',
+        {
+            preHandler: authMiddleware,
+            schema: {
+                body: {
+                    type: 'object',
+                    required: ['transferIBAN'],
+                    properties: {
+                        transferIBAN: { type: 'string' }
+                    }
+                }
+            }
+        },
+        async (request, reply) => {
+            return userController.deleteUser(request as any, reply);
         }
     );
 }

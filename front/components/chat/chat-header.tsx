@@ -71,16 +71,16 @@ export const ChatHeader = ({ chat, currentUserRole, onBack, onClose, onTransfer,
             <div>
               <h3
                 className={`font-semibold text-gray-900 ${
-                  currentUserRole === UserRole.ADVISOR && otherUser 
+                  (currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && otherUser 
                     ? 'cursor-pointer hover:text-blue-600 hover:underline transition-colors' 
                     : ''
                 }`}
                 onClick={() => {
-                  if (currentUserRole === UserRole.ADVISOR && onClientClick && otherUser) {
+                  if ((currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && onClientClick && otherUser) {
                     onClientClick(otherUser.id);
                   }
                 }}
-                title={currentUserRole === UserRole.ADVISOR && otherUser ? t('chat.viewClientDetails') : undefined}
+                title={(currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && otherUser ? t('chat.viewClientDetails') : undefined}
               >
                 {otherUser
                     ? `${otherUser.firstName} ${otherUser.lastName}`

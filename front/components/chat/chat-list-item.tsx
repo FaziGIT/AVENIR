@@ -22,7 +22,7 @@ export const ChatListItem = ({ chat, isActive, onClick, currentUserRole, onClien
   const handleClientNameClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (currentUserRole === UserRole.ADVISOR && onClientClick && chat.client) {
+    if ((currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && onClientClick && chat.client) {
       onClientClick(chat.client.id);
     }
   };
@@ -105,12 +105,12 @@ export const ChatListItem = ({ chat, isActive, onClick, currentUserRole, onClien
           <div className="flex items-center gap-2 mb-1">
             <h4
               className={`font-semibold text-gray-900 truncate ${
-                currentUserRole === UserRole.ADVISOR && otherUser 
+                (currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && otherUser 
                   ? 'cursor-pointer hover:text-blue-600 hover:underline transition-colors' 
                   : ''
               }`}
-              onClick={currentUserRole === UserRole.ADVISOR ? handleClientNameClick : undefined}
-              title={currentUserRole === UserRole.ADVISOR && otherUser ? t('chat.viewClientDetails') : undefined}
+              onClick={(currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) ? handleClientNameClick : undefined}
+              title={(currentUserRole === UserRole.ADVISOR || currentUserRole === UserRole.DIRECTOR) && otherUser ? t('chat.viewClientDetails') : undefined}
             >
               {otherUser
                 ? `${otherUser.firstName} ${otherUser.lastName}`

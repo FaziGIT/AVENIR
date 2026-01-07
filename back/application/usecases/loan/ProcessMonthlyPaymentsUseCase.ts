@@ -1,5 +1,6 @@
 import { LoanRepository } from '../../../domain/repositories/LoanRepository';
 import { AccountRepository } from '../../../domain/repositories/AccountRepository';
+import { UserRepository } from '../../../domain/repositories/UserRepository';
 import { CreateNotificationUseCase } from '../notification/CreateNotificationUseCase';
 import { NotificationType } from '@avenir/shared/enums/NotificationType';
 import { Loan } from '../../../domain/entities/Loan';
@@ -7,12 +8,14 @@ import { Account } from '../../../domain/entities/Account';
 import { SSEService } from '../../../infrastructure/adapters/services/SSEService';
 import { LoanResponse } from '../../responses/LoanResponse';
 import { LoanStatus } from "@avenir/shared/enums/LoanStatus";
-import {AccountType} from "@avenir/shared/enums/AccountType";
+import { AccountType } from "@avenir/shared/enums/AccountType";
+import { UserState } from "../../../domain/enumerations/UserState";
 
 export class ProcessMonthlyPaymentsUseCase {
     constructor(
         private loanRepository: LoanRepository,
         private accountRepository: AccountRepository,
+        private userRepository: UserRepository,
         private createNotificationUseCase: CreateNotificationUseCase,
         private sseService: SSEService
     ) {}
@@ -48,6 +51,12 @@ export class ProcessMonthlyPaymentsUseCase {
     }
 
     private async processLoanPayment(loan: Loan, isManual: boolean = false, advisorName?: string): Promise<void> {
+        const user = await this.userRepository.getById(loan.clientId);
+        if (!user || user.state === UserState.BANNED) {
+            // Ne pas traiter le prélèvement pour un utilisateur banni
+            return;
+        }
+
         // Si c'est un traitement manuel, envoyer une notification d'information au client
         if (isManual && advisorName) {
             await this.createNotificationUseCase.execute(

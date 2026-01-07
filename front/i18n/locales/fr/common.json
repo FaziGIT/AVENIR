@@ -20,7 +20,13 @@
     "send": "Envoyer",
     "optional": "Optionnel",
     "sending": "Envoi...",
-    "deleting": "Suppression..."
+    "deleting": "Suppression...",
+    "email": "Email",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "password": "Mot de passe",
+    "firstNamePlaceholder": "Jean",
+    "lastNamePlaceholder": "Dupont"
   },
   "home": {
     "title": "AVENIR",
@@ -544,7 +550,6 @@
     }
   },
   "chat": {
-    "title": "Contact",
     "conversations": "Conversations",
     "newConversation": "Nouvelle conversation",
     "noConversations": "Aucune conversation",
@@ -666,6 +671,103 @@
       "manualProcessingMessage": "Votre conseiller {{advisorName}} a lancé un traitement manuel pour votre crédit \"{{loanName}}\".",
       "completed": "Crédit remboursé",
       "completedMessage": "Félicitations ! Votre crédit \"{{loanName}}\" est entièrement remboursé."
+    }
+  },
+  "director": {
+    "allClients": "Tous les clients",
+    "showBanned": "Afficher les clients bannis",
+    "createClient": {
+      "button": "Créer un client",
+      "title": "Créer un nouveau client",
+      "submit": "Créer le client",
+      "success": "Client créé avec succès",
+      "successDescription": "Le client {{name}} a été créé avec succès.",
+      "error": "Erreur lors de la création",
+      "errorDescription": "Impossible de créer le client"
+    },
+    "editClient": {
+      "button": "Modifier",
+      "title": "Modifier le client",
+      "submit": "Enregistrer",
+      "bannedTooltip": "Impossible de modifier un compte banni. Veuillez d'abord activer le compte.",
+      "success": "Client modifié avec succès",
+      "successDescription": "Les informations du client ont été mises à jour.",
+      "error": "Erreur lors de la modification",
+      "errorDescription": "Impossible de modifier le client"
+    },
+    "banClient": {
+      "button": "Bannir",
+      "confirmTitle": "Bannir le client",
+      "confirm": "Êtes-vous sûr de vouloir bannir {{name}} ?\n\nConséquences du bannissement :\n• Le client sera immédiatement déconnecté\n• Tous les comptes seront gelés et vidés\n• Tous les investissements seront liquidés\n• Les crédits actifs seront remboursés avec les fonds disponibles\n• Le client ne pourra plus se connecter\n\nCette action nécessitera une réactivation manuelle.",
+      "success": "Client banni",
+      "successDescription": "Le client {{name}} a été banni.",
+      "error": "Erreur lors du bannissement",
+      "errorDescription": "Impossible de bannir le client"
+    },
+    "activateClient": {
+      "button": "Activer",
+      "confirmTitle": "Activer le client",
+      "confirm": "Êtes-vous sûr de vouloir activer {{name}} ? Le client pourra à nouveau se connecter.",
+      "success": "Client activé",
+      "successDescription": "Le client {{name}} a été activé.",
+      "error": "Erreur lors de l'activation",
+      "errorDescription": "Impossible d'activer le client"
+    },
+    "deleteClient": {
+      "button": "Supprimer",
+      "confirmTitle": "Supprimer le client",
+      "confirm": "Êtes-vous sûr de vouloir supprimer le client {{name}} ? Cette action est irréversible.",
+      "bannedTooltip": "Impossible de supprimer un compte banni. Veuillez d'abord activer le compte.",
+      "success": "Client supprimé",
+      "successDescription": "Le client {{name}} a été supprimé.",
+      "error": "Erreur lors de la suppression",
+      "errorDescription": "Impossible de supprimer le client"
+    },
+    "clientAction": {
+      "errorDescription": "Une erreur est survenue"
+    }
+  },
+  "validation": {
+    "emailRequired": "L'email est requis",
+    "emailInvalid": "L'email n'est pas valide",
+    "firstNameRequired": "Le prénom est requis",
+    "lastNameRequired": "Le nom est requis",
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères"
+  },
+  "banned": {
+    "title": "Compte suspendu",
+    "subtitle": "Votre accès à votre compte bancaire a été temporairement suspendu",
+    "accountSuspended": "Pourquoi mon compte est-il suspendu ?",
+    "explanation": "Votre compte a été suspendu suite à une décision de notre équipe de sécurité. Cette mesure a été prise pour protéger vos intérêts et ceux de la banque. Vous pouvez contacter notre service client pour demander la réactivation de votre compte.",
+    "actionsPerformed": "Actions effectuées automatiquement",
+    "action1": "Tous vos comptes ont été gelés",
+    "action2": "Vos investissements ont été liquidés",
+    "action3": "Les fonds disponibles ont été utilisés pour rembourser vos crédits en cours",
+    "action4": "Vos cartes bancaires ont été désactivées",
+    "reactivationInfo": "En cas de réactivation",
+    "reactivation1": "Vous retrouverez l'argent restant sur vos comptes",
+    "reactivation2": "Les crédits déjà remboursés restent soldés",
+    "reactivation3": "Les crédits non remboursés restent actifs dans leur état actuel",
+    "reactivation4": "Vous devrez demander de nouvelles cartes bancaires",
+    "contactUs": "Contactez-nous pour réactiver votre compte",
+    "phone": "Service client",
+    "email": "Email de support",
+    "supportHours": "Disponible du lundi au vendredi, de 9h à 18h",
+    "logout": "Se déconnecter",
+    "reference": "Référence du compte"
+  },
+  "account": {
+    "deleteAccount": {
+      "title": "Supprimer définitivement mon compte",
+      "warning": "ATTENTION : Cette action est irréversible !\n\nEn supprimant votre compte :\n• Tous vos investissements seront liquidés\n• Vos crédits actifs seront remboursés avec vos fonds disponibles\n• Le solde restant sera transféré vers l'IBAN indiqué\n• Votre compte sera définitivement supprimé\n• Vous ne pourrez plus vous reconnecter",
+      "ibanLabel": "IBAN de destination pour le transfert",
+      "ibanHelp": "Indiquez l'IBAN du compte où vous souhaitez recevoir le solde restant",
+      "confirm": "Supprimer mon compte",
+      "success": "Compte supprimé",
+      "successDescription": "Votre compte a été supprimé avec succès. Le transfert vers l'IBAN {{iban}} sera effectué sous peu.",
+      "error": "Erreur lors de la suppression",
+      "button": "Supprimer mon compte"
     }
   }
 }

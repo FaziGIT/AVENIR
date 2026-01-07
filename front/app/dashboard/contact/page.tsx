@@ -27,10 +27,12 @@ import {
 } from '@/lib/mapping';
 import {ChatStatus, WebSocketMessageType} from "@avenir/shared/enums";
 import {useTranslation} from 'react-i18next';
+import { DeleteAccountModal } from '@/components/modals/delete-account-modal';
+import {userApi} from "@/lib/api/user.api";
 
 export default function ContactPage() {
   const { t } = useTranslation();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, logout } = useAuth();
   const { toast } = useToast();
   const { subscribe } = useWebSocket();
   const router = useRouter();
@@ -48,32 +50,43 @@ export default function ContactPage() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isTransferring, setIsTransferring] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
 
   // Gestion de la redirection vers les détails du client
   const handleClientClick = useCallback(async (clientId: string) => {
-    if (!currentUser || currentUser.role !== UserRole.ADVISOR) return;
+    if (!currentUser) return;
 
-    try {
-      const result = await checkClientAdvisor(clientId, currentUser.id);
+    // Le directeur peut accéder à tous les clients sans vérification
+    if (currentUser.role === UserRole.DIRECTOR) {
+      sessionStorage.setItem('openClientId', clientId);
+      router.push('/dashboard/clients');
+      return;
+    }
 
-      if (result.isManaged) {
-        sessionStorage.setItem('openClientId', clientId);
-        router.push('/dashboard/clients');
-      } else {
+    // Pour les conseillers, vérifier qu'ils gèrent bien le client
+    if (currentUser.role === UserRole.ADVISOR) {
+      try {
+        const result = await checkClientAdvisor(clientId, currentUser.id);
+
+        if (result.isManaged) {
+          sessionStorage.setItem('openClientId', clientId);
+          router.push('/dashboard/clients');
+        } else {
+          toast({
+            title: t('common.error'),
+            description: result.advisorName
+              ? `Ce client est géré par ${result.advisorName}`
+              : 'Ce client n\'est pas sous votre gestion',
+            variant: 'destructive',
+          });
+        }
+      } catch {
         toast({
-          title: 'Client non géré',
-          description: result.advisorName
-            ? `Ce client est géré par ${result.advisorName}`
-            : 'Ce client n\'est pas sous votre gestion',
+          title: t('common.error'),
+          description: 'Erreur lors de la vérification du client',
           variant: 'destructive',
         });
       }
-    } catch {
-      toast({
-        title: t('common.error'),
-        description: 'Erreur lors de la vérification du client',
-        variant: 'destructive',
-      });
     }
   }, [currentUser, router, toast, t]);
 
@@ -551,7 +564,11 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
-      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <DashboardHeader
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onDeleteAccount={() => setIsDeleteAccountModalOpen(true)}
+      />
 
       <main className="mx-auto max-w-450 p-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -751,6 +768,21 @@ export default function ContactPage() {
         onSubmit={handleAssignAdvisor}
         isLoading={isAssigning}
         currentAdvisorId={selectedChat?.advisorId}
+      />
+
+      {/* Modal de suppression de compte */}
+      <DeleteAccountModal
+        isOpen={isDeleteAccountModalOpen}
+        onClose={() => setIsDeleteAccountModalOpen(false)}
+        onConfirm={async (iban: string) => {
+          await userApi.deleteMyAccount(iban);
+          toast({
+            title: t('account.deleteAccount.success'),
+            description: t('account.deleteAccount.successDescription', { iban }),
+          });
+          await logout();
+          router.push('/login');
+        }}
       />
     </div>
   );

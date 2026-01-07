@@ -15,6 +15,7 @@ import { DashboardHeader } from '@/components/dashboard-header';
 import { AddAccountModal } from '@/components/modals/AddAccountModal';
 import { AddSavingsModal } from '@/components/modals/AddSavingsModal';
 import { DeleteAccountModal } from '@/components/modals/DeleteAccountModal';
+import { DeleteAccountModal as DeleteUserAccountModal } from '@/components/modals/delete-account-modal';
 import { EditAccountNameModal } from '@/components/modals/EditAccountNameModal';
 import { SendMoneyModal } from '@/components/modals/SendMoneyModal';
 import { News } from '@/types/news';
@@ -33,13 +34,16 @@ import { formatCurrency } from '@/lib/format';
 import { calculateSavingsProgress } from '@/lib/savings';
 import { useSSE, SSEEventType, isNewsCreatedPayload, isNewsDeletedPayload } from '@/contexts/SSEContext';
 import { mapSSENewsToNews } from '@/lib/mapping/sse.mapping';
+import { useRouter } from 'next/navigation';
+import { userApi } from '@/lib/api/user.api';
 import { RealTransactionItem } from '@/components/ui/real-transaction-item';
 
 export default function Home() {
     const { t } = useLanguage();
-    const { user, isLoading: isAuthLoading } = useAuth();
+    const { user, isLoading: isAuthLoading, logout } = useAuth();
     const { toast } = useToast();
     const { subscribe } = useSSE();
+    const router = useRouter();
     const [period, setPeriod] = useState('yearly');
     const [activeTab, setActiveTab] = useState('overview');
     const [filterOpen, setFilterOpen] = useState(false);
@@ -48,6 +52,7 @@ export default function Home() {
     const [addAccountModalOpen, setAddAccountModalOpen] = useState(false);
     const [addSavingsModalOpen, setAddSavingsModalOpen] = useState(false);
     const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
+    const [deleteUserAccountModalOpen, setDeleteUserAccountModalOpen] = useState(false);
     const [deleteAccountType, setDeleteAccountType] = useState<AccountType | undefined>(undefined);
     const [editAccountNameModalOpen, setEditAccountNameModalOpen] = useState(false);
     const [sendMoneyModalOpen, setSendMoneyModalOpen] = useState(false);
@@ -86,7 +91,7 @@ export default function Home() {
             });
         } finally {
             setIsLoadingAccounts(false);
-        }   
+        }
     }, [user?.id, toast, t]);
 
     const loadTransactions = useCallback(async () => {
@@ -311,7 +316,7 @@ export default function Home() {
             // Group transactions by month
             const monthlyData: Record<number, number> = {};
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
+
             transactions.forEach(transaction => {
                 const date = new Date(transaction.createdAt);
                 const month = date.getMonth();
@@ -338,7 +343,7 @@ export default function Home() {
             const weeklyData: Record<number, number> = {};
             const now = new Date();
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            
+
             transactions.forEach(transaction => {
                 const date = new Date(transaction.createdAt);
                 if (date >= startOfMonth && date <= now) {
@@ -367,7 +372,7 @@ export default function Home() {
             const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             transactions.forEach(transaction => {
                 const date = new Date(transaction.createdAt);
                 date.setHours(0, 0, 0, 0);
@@ -448,6 +453,22 @@ export default function Home() {
         transactionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    const handleDeleteUserAccount = async (iban: string) => {
+        try {
+            await userApi.deleteMyAccount(iban);
+
+            toast({
+                title: t('account.deleteAccount.success'),
+                description: t('account.deleteAccount.successDescription', { iban }),
+            });
+            await logout();
+            router.push('/login');
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            throw error;
+        }
+    };
+
     if (isAuthLoading) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -460,27 +481,31 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onDeleteAccount={() => setDeleteUserAccountModalOpen(true)}
+            />
 
             <main className="mx-auto max-w-450 p-6">
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
                     <div className="space-y-6 lg:col-span-8">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <StatCard 
-                                title={t('dashboard.income')} 
-                                amount={formatCurrency(income, 'EUR')} 
-                                trend={incomeTrend} 
-                                variant="primary" 
+                            <StatCard
+                                title={t('dashboard.income')}
+                                amount={formatCurrency(income, 'EUR')}
+                                trend={incomeTrend}
+                                variant="primary"
                             />
-                            <StatCard 
-                                title={t('dashboard.expenses')} 
-                                amount={formatCurrency(expenses, 'EUR')} 
-                                trend={expensesTrend} 
+                            <StatCard
+                                title={t('dashboard.expenses')}
+                                amount={formatCurrency(expenses, 'EUR')}
+                                trend={expensesTrend}
                             />
-                            <StatCard 
-                                title={t('dashboard.savings')} 
-                                amount={formatCurrency(savingsTotal, 'EUR')} 
-                                trend={savingsTrend} 
+                            <StatCard
+                                title={t('dashboard.savings')}
+                                amount={formatCurrency(savingsTotal, 'EUR')}
+                                trend={savingsTrend}
                             />
                         </div>
 
@@ -595,7 +620,7 @@ export default function Home() {
                                     <>
                                         {Object.entries(groupedTransactions).map(([group, groupTransactions]) => {
                                             if (groupTransactions.length === 0) return null;
-                                            
+
                                             const getGroupLabel = () => {
                                                 switch (group) {
                                                     case 'today':
@@ -918,9 +943,9 @@ export default function Home() {
                 accounts={accounts}
                 onSuccess={loadAccounts}
             />
-            <DeleteAccountModal 
-                open={deleteAccountModalOpen} 
-                onOpenChange={(open) => {
+            <DeleteAccountModal
+                open={deleteAccountModalOpen}
+                onOpenChange={(open: boolean) => {
                     setDeleteAccountModalOpen(open);
                     if (!open) {
                         setDeleteAccountType(undefined);
@@ -933,6 +958,11 @@ export default function Home() {
                     loadTransactions();
                 }}
             />
+            <DeleteUserAccountModal
+                isOpen={deleteUserAccountModalOpen}
+                onClose={() => setDeleteUserAccountModalOpen(false)}
+                onConfirm={handleDeleteUserAccount}
+            />
             <EditAccountNameModal
                 open={editAccountNameModalOpen}
                 onOpenChange={setEditAccountNameModalOpen}
@@ -940,16 +970,16 @@ export default function Home() {
                 currentName={selectedAccountForEdit?.name || ''}
                 onSuccess={loadAccounts}
             />
-            <SendMoneyModal 
-                open={sendMoneyModalOpen} 
+            <SendMoneyModal
+                open={sendMoneyModalOpen}
                 onOpenChange={setSendMoneyModalOpen}
                 onSuccess={() => {
                     loadAccounts();
                     loadTransactions();
                 }}
             />
-            <AddMoneyModal 
-                open={addMoneyModalOpen} 
+            <AddMoneyModal
+                open={addMoneyModalOpen}
                 onOpenChange={setAddMoneyModalOpen}
                 onSuccess={() => {
                     loadAccounts();

@@ -13,17 +13,22 @@ import { useToast } from '@/hooks/use-toast';
 import { mapLoansApiResponseToClientLoans } from '@/lib/mapping/loan.mapping';
 import { useSSE, SSEEventType, isLoanCreatedPayload } from '@/contexts/SSEContext';
 import { mapSSELoanToLoanApiResponse } from '@/lib/mapping/sse.mapping';
+import { DeleteAccountModal } from '@/components/modals/delete-account-modal';
+import { useRouter } from 'next/navigation';
+import {userApi} from "@/lib/api/user.api";
 
 export default function LoansPage() {
   const { t } = useTranslation();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, logout } = useAuth();
   const { toast } = useToast();
   const { subscribe } = useSSE();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('loans');
   const [loans, setLoans] = useState<ClientLoan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCompletedLoans, setShowCompletedLoans] = useState(false);
   const [loanSearchQuery, setLoanSearchQuery] = useState('');
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
   const loansIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -131,7 +136,11 @@ export default function LoansPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
-      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <DashboardHeader
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onDeleteAccount={() => setIsDeleteAccountModalOpen(true)}
+      />
 
       <main className="mx-auto max-w-450 p-6">
         {/* Header */}
@@ -402,6 +411,21 @@ export default function LoansPage() {
           </div>
         )}
       </main>
+
+      {/* Modal de suppression de compte */}
+      <DeleteAccountModal
+        isOpen={isDeleteAccountModalOpen}
+        onClose={() => setIsDeleteAccountModalOpen(false)}
+        onConfirm={async (iban: string) => {
+          await userApi.deleteMyAccount(iban);
+          toast({
+            title: t('account.deleteAccount.success'),
+            description: t('account.deleteAccount.successDescription', { iban }),
+          });
+          await logout();
+          router.push('/login');
+        }}
+      />
     </div>
   );
 }

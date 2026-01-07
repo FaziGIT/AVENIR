@@ -3,7 +3,7 @@
 import React, {useState, useEffect} from 'react';
 import {ClientWithDetails} from '@/types/client';
 import {AnimatePresence, motion} from 'framer-motion';
-import {Bell, Calendar, ChevronDown, MessageCircle, TrendingUp, X, RefreshCw} from 'lucide-react';
+import {Bell, Calendar, ChevronDown, Edit, MessageCircle, Shield, Trash2, TrendingUp, X, RefreshCw} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {useRouter} from 'next/navigation';
 import {ChatStatus, LoanStatus, UserState} from "@avenir/shared/enums";
@@ -17,9 +17,13 @@ interface ClientDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   client: ClientWithDetails | null;
-  onSendNotification: () => void;
-  onGrantLoan: () => void;
+  onSendNotification?: () => void;
+  onGrantLoan?: () => void;
   onClientUpdate?: (updatedClient: ClientWithDetails) => void;
+  onEditClient?: () => void;
+  onBanClient?: () => void;
+  onDeleteClient?: () => void;
+  isDirector?: boolean;
 }
 
 export const ClientDetailsModal = ({
@@ -29,6 +33,10 @@ export const ClientDetailsModal = ({
   onSendNotification,
   onGrantLoan,
   onClientUpdate,
+  onEditClient,
+  onBanClient,
+  onDeleteClient,
+  isDirector = false,
 }: ClientDetailsModalProps) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -76,9 +84,9 @@ export const ClientDetailsModal = ({
 
     const clientId = client.id;
 
-    const callback = (event: any) => {
-      if (event.type === SSEEventType.LOAN_CREATED && isLoanCreatedPayload(event.data)) {
-        const loanPayload = mapSSELoanToLoanApiResponse(event.data);
+    const callback = (event: { type: string; data: unknown }) => {
+      if (event.type === SSEEventType.LOAN_CREATED && isLoanCreatedPayload(event.data as never)) {
+        const loanPayload = mapSSELoanToLoanApiResponse(event.data as never);
 
         if (loanPayload.clientId !== clientId) {
           return;
@@ -224,20 +232,58 @@ export const ClientDetailsModal = ({
 
                 {/* Actions */}
                 <div className="mt-4 flex gap-3">
-                  <button
-                    onClick={onSendNotification}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                  >
-                    <Bell className="h-4 w-4" />
-                    {t('clients.sendNotification')}
-                  </button>
-                  <button
-                    onClick={onGrantLoan}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:from-blue-700 hover:to-indigo-700"
-                  >
-                    <TrendingUp className="h-4 w-4" />
-                    {t('clients.grantLoan')}
-                  </button>
+                  {/* Boutons pour le conseiller */}
+                  {onSendNotification && onGrantLoan && (
+                    <>
+                      <button
+                        onClick={onSendNotification}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                      >
+                        <Bell className="h-4 w-4" />
+                        {t('clients.sendNotification')}
+                      </button>
+                      <button
+                        onClick={onGrantLoan}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:from-blue-700 hover:to-indigo-700"
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                        {t('clients.grantLoan')}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Boutons pour le directeur */}
+                  {onEditClient && onBanClient && onDeleteClient && (
+                    <>
+                      <button
+                        onClick={onEditClient}
+                        disabled={displayedClient?.state === UserState.BANNED}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                        title={displayedClient?.state === UserState.BANNED ? t('director.editClient.bannedTooltip') : ''}
+                      >
+                        <Edit className="h-4 w-4" />
+                        {t('director.editClient.button')}
+                      </button>
+                      <button
+                        onClick={onBanClient}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-orange-300 bg-white px-4 py-2.5 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-50"
+                      >
+                        <Shield className="h-4 w-4" />
+                        {displayedClient?.state === UserState.BANNED
+                          ? t('director.activateClient.button')
+                          : t('director.banClient.button')}
+                      </button>
+                      <button
+                        onClick={onDeleteClient}
+                        disabled={displayedClient?.state === UserState.BANNED}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                        title={displayedClient?.state === UserState.BANNED ? t('director.deleteClient.bannedTooltip') : ''}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        {t('director.deleteClient.button')}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -473,8 +519,8 @@ export const ClientDetailsModal = ({
                                 </div>
                               </div>
 
-                              {/* Bouton de prélèvement manuel pour les crédits en défaut */}
-                              {loan.status === LoanStatus.DEFAULTED && (
+                              {/* Bouton de prélèvement manuel pour les crédits en défaut (conseiller uniquement) */}
+                              {loan.status === LoanStatus.DEFAULTED && !isDirector && (
                                 <div className="mt-3">
                                   <button
                                     onClick={(e) => {

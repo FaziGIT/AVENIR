@@ -49,4 +49,33 @@ export const userApi = {
     const data = await response.json();
     return mapUserFromApi(data);
   },
+
+  async deleteMyAccount(transferIBAN: string): Promise<void> {
+    // Récupérer l'ID de l'utilisateur connecté
+    const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      credentials: 'include',
+    });
+
+    if (!userResponse.ok) {
+      throw new Error('Failed to get current user');
+    }
+
+    const userData = await userResponse.json();
+    const userId = userData.user.id;
+
+    // Supprimer le compte
+    const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ transferIBAN }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to delete account');
+    }
+  },
 };

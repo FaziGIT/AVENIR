@@ -46,6 +46,12 @@ export const LoginForm = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
+
+                if (response.status === 403 && errorData.isBanned) {
+                    window.location.href = '/banned';
+                    return;
+                }
+
                 throw new Error(errorData.message || 'Login failed');
             }
 

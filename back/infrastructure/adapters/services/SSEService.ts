@@ -181,6 +181,36 @@ export class SSEService {
         }
     }
 
+    notifyUserBanned(userId: string): void {
+        const userClients = this.clients.get(userId);
+        if (!userClients || userClients.length === 0) {
+            return;
+        }
+
+        this.sendMessageToUser(userId, {
+            type: SSEEventType.USER_BANNED,
+            data: {
+                message: 'Your account has been suspended',
+                timestamp: new Date().toISOString()
+            },
+        });
+    }
+
+    notifyUserDeleted(userId: string): void {
+        const userClients = this.clients.get(userId);
+        if (!userClients || userClients.length === 0) {
+            return;
+        }
+
+        this.sendMessageToUser(userId, {
+            type: SSEEventType.USER_DELETED,
+            data: {
+                message: 'Your account has been deleted',
+                timestamp: new Date().toISOString()
+            },
+        });
+    }
+
     getConnectedClientsCount(): number {
         let count = 0;
         this.clients.forEach(clients => {

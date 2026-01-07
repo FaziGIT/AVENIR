@@ -11,6 +11,7 @@ interface User {
   lastName: string;
   email: string;
   role: UserRole;
+  state: string;
 }
 
 interface AuthContextType {
@@ -33,8 +34,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshAuth = useCallback(async () => {
     try {
       const userData = await api.getCurrentUser();
-      setUser(userData?.user || null);
-    } catch (error: any) {
+      const fetchedUser = userData?.user || null;
+
+      if (fetchedUser && fetchedUser.state === 'BANNED') {
+        api.clearCookies();
+        setUser(null);
+
+        window.location.href = '/banned';
+        return;
+      }
+
+      setUser(fetchedUser);
+    } catch {
       setUser(null);
       api.clearCookies();
     } finally {

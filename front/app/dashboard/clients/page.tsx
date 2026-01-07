@@ -6,18 +6,23 @@ import { ClientCard } from '@/components/clients/client-card';
 import { ClientDetailsModal } from '@/components/clients/client-details-modal';
 import { SendNotificationModal } from '@/components/clients/send-notification-modal';
 import { GrantLoanModal, LoanCalculation } from '@/components/clients/grant-loan-modal';
+import { CreateClientModal, CreateClientData } from '@/components/clients/create-client-modal';
+import { EditClientModal, EditClientData } from '@/components/clients/edit-client-modal';
+import { ConfirmDialog } from '@/components/modals/confirm-dialog';
+import { DeleteAccountModal } from '@/components/modals/delete-account-modal';
 import { ClientWithDetails } from '@/types/client';
 import { motion } from 'framer-motion';
-import { Users, Search } from 'lucide-react';
+import { Users, Search, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSSE, SSEEventType, isLoanCreatedPayload } from '@/contexts/SSEContext';
 import { getAdvisorClients } from '@/lib/api/advisor.api';
+import { getAllClients, banClient, activateClient, deleteClient, updateClient, createClient } from '@/lib/api/director.api';
 import { createNotification } from '@/lib/api/notification.api';
-import {createLoan} from '@/lib/api/loan.api';
+import { createLoan } from '@/lib/api/loan.api';
 import { mapAdvisorClientsToClientDetails } from '@/lib/mapping/client.mapping';
-import { CustomNotificationType } from '@avenir/shared/enums';
+import { CustomNotificationType, UserRole, UserState } from '@avenir/shared/enums';
 import { mapLoansApiResponseToClientLoans } from '@/lib/mapping/loan.mapping';
 import { mapSSELoanToLoanApiResponse } from '@/lib/mapping/sse.mapping';
 
@@ -33,9 +38,18 @@ export default function ClientsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoanModalOpen, setIsLoanModalOpen] = useState(false);
+  const [isCreateClientModalOpen, setIsCreateClientModalOpen] = useState(false);
+  const [isEditClientModalOpen, setIsEditClientModalOpen] = useState(false);
   const [isLoadingNotification, setIsLoadingNotification] = useState(false);
   const [isLoadingLoan, setIsLoadingLoan] = useState(false);
   const [isLoadingClients, setIsLoadingClients] = useState(true);
+  const [isLoadingClientAction, setIsLoadingClientAction] = useState(false);
+  const [showBanned, setShowBanned] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isBanConfirmOpen, setIsBanConfirmOpen] = useState(false);
+  const [isLoadingDeleteAccount, setIsLoadingDeleteAccount] = useState(false);
+
+  const isDirector = currentUser?.role === UserRole.DIRECTOR;
 
   const loadClients = useCallback(async () => {
     if (!currentUser) return;
@@ -43,8 +57,17 @@ export default function ClientsPage() {
     try {
       setIsLoadingClients(true);
 
-      const advisorClients = await getAdvisorClients(currentUser.id);
-      const clientsList = mapAdvisorClientsToClientDetails(advisorClients, currentUser.id);
+      let clientsList: ClientWithDetails[];
+
+      if (isDirector) {
+        // Directeur : récupère tous les clients
+        const allClients = await getAllClients(currentUser.id);
+        clientsList = mapAdvisorClientsToClientDetails(allClients, currentUser.id);
+      } else {
+        // Conseiller : récupère que ses clients
+        const advisorClients = await getAdvisorClients(currentUser.id);
+        clientsList = mapAdvisorClientsToClientDetails(advisorClients, currentUser.id);
+      }
 
       setClients(clientsList);
     } catch {
@@ -55,7 +78,7 @@ export default function ClientsPage() {
     } finally {
       setIsLoadingClients(false);
     }
-  }, [currentUser, toast, t]);
+  }, [currentUser, isDirector, toast, t]);
 
   useEffect(() => {
     void loadClients();
@@ -223,14 +246,154 @@ export default function ClientsPage() {
     }
   };
 
+  // Handlers pour le directeur
+  const handleCreateClient = async (data: CreateClientData) => {
+    try {
+      setIsLoadingClientAction(true);
+      await createClient(data);
+
+      toast({
+        title: t('director.createClient.success'),
+        description: t('director.createClient.successDescription', {
+          name: `${data.firstName} ${data.lastName}`,
+        }),
+      });
+
+      await loadClients();
+      setIsCreateClientModalOpen(false);
+    } catch (error) {
+      toast({
+        title: t('director.createClient.error'),
+        description: error instanceof Error ? error.message : t('director.createClient.errorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingClientAction(false);
+    }
+  };
+
+  const handleEditClient = async (data: EditClientData) => {
+    if (!selectedClient) return;
+
+    try {
+      setIsLoadingClientAction(true);
+      await updateClient(selectedClient.id, data);
+
+      toast({
+        title: t('director.editClient.success'),
+        description: t('director.editClient.successDescription'),
+      });
+
+      await loadClients();
+      setIsEditClientModalOpen(false);
+      setIsDetailsModalOpen(false);
+    } catch (error) {
+      toast({
+        title: t('director.editClient.error'),
+        description: error instanceof Error ? error.message : t('director.editClient.errorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingClientAction(false);
+    }
+  };
+
+  const handleBanToggleClient = async () => {
+    if (!selectedClient) return;
+    setIsBanConfirmOpen(true);
+  };
+
+  const confirmBanToggleClient = async () => {
+    if (!selectedClient) return;
+
+    const isBanned = selectedClient.state === UserState.BANNED;
+
+    try {
+      setIsLoadingClientAction(true);
+
+      if (isBanned) {
+        await activateClient(selectedClient.id);
+        toast({
+          title: t('director.activateClient.success'),
+          description: t('director.activateClient.successDescription', {
+            name: `${selectedClient.firstName} ${selectedClient.lastName}`,
+          }),
+        });
+      } else {
+        await banClient(selectedClient.id);
+        toast({
+          title: t('director.banClient.success'),
+          description: t('director.banClient.successDescription', {
+            name: `${selectedClient.firstName} ${selectedClient.lastName}`,
+          }),
+        });
+      }
+
+      await loadClients();
+      setIsDetailsModalOpen(false);
+      setIsBanConfirmOpen(false);
+    } catch (error) {
+      toast({
+        title: isBanned ? t('director.activateClient.error') : t('director.banClient.error'),
+        description: error instanceof Error ? error.message : t('director.clientAction.errorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingClientAction(false);
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    if (!selectedClient) return;
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteClient = async (iban: string) => {
+    if (!selectedClient) return;
+
+    try {
+      setIsLoadingDeleteAccount(true);
+      await deleteClient(selectedClient.id, iban);
+
+      toast({
+        title: t('director.deleteClient.success'),
+        description: t('director.deleteClient.successDescription', {
+          name: `${selectedClient.firstName} ${selectedClient.lastName}`,
+        }),
+      });
+
+      await loadClients();
+      setIsDetailsModalOpen(false);
+      setIsDeleteConfirmOpen(false);
+    } catch (error) {
+      toast({
+        title: t('director.deleteClient.error'),
+        description: error instanceof Error ? error.message : t('director.deleteClient.errorDescription'),
+        variant: 'destructive',
+      });
+      throw error; // Relancer l'erreur pour que la modal puisse l'afficher
+    } finally {
+      setIsLoadingDeleteAccount(false);
+    }
+  };
+
   const filteredClients = clients.filter((client) => {
+    // Filtre pour afficher/masquer les clients inactifs/bannis (directeur uniquement)
+    if (isDirector && !showBanned) {
+      if (client.state === UserState.BANNED || client.state === UserState.INACTIVE) {
+        return false;
+      }
+    }
+
+    // Filtre de recherche
     if (!searchQuery.trim()) return true;
 
     const query = searchQuery.toLowerCase();
     const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
     const email = client.email.toLowerCase();
+    const state = client.state.toLowerCase();
 
-    return fullName.includes(query) || email.includes(query);
+    return fullName.includes(query) || email.includes(query) || state.includes(query);
   });
 
 
@@ -247,22 +410,52 @@ export default function ClientsPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('clients.myClients')}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {isDirector ? t('director.allClients') : t('clients.myClients')}
+              </h1>
               <p className="mt-2 text-gray-600">
                 {filteredClients.length} client{filteredClients.length > 1 ? 's' : ''}
               </p>
             </div>
 
-            {/* Barre de recherche */}
-            <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
-              <Search className="h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder={t('common.search')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 border-none bg-transparent text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none"
-              />
+            <div className="flex items-center gap-4">
+              {/* Checkbox pour afficher les clients bannis/inactifs (directeur uniquement) */}
+              {isDirector && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showBanned}
+                    onChange={(e) => setShowBanned(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-600">
+                    {t('director.showBanned')}
+                  </span>
+                </label>
+              )}
+
+              {/* Barre de recherche */}
+              <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
+                <Search className="h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder={t('common.search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-64 border-none bg-transparent text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none"
+                />
+              </div>
+
+              {/* Bouton créer client (directeur uniquement) */}
+              {isDirector && (
+                <button
+                  onClick={() => setIsCreateClientModalOpen(true)}
+                  className="flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl"
+                >
+                  <UserPlus className="h-5 w-5" />
+                  {t('director.createClient.button')}
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
@@ -321,31 +514,100 @@ export default function ClientsPage() {
           setSelectedClient(null);
         }}
         client={selectedClient}
-        onSendNotification={() => setIsNotificationModalOpen(true)}
-        onGrantLoan={() => setIsLoanModalOpen(true)}
+        onSendNotification={!isDirector ? () => setIsNotificationModalOpen(true) : undefined}
+        onGrantLoan={!isDirector ? () => setIsLoanModalOpen(true) : undefined}
         onClientUpdate={(updatedClient) => {
           setClients(prevClients =>
             prevClients.map(c => c.id === updatedClient.id ? updatedClient : c)
           );
           setSelectedClient(updatedClient);
         }}
+        onEditClient={isDirector ? () => setIsEditClientModalOpen(true) : undefined}
+        onBanClient={isDirector ? handleBanToggleClient : undefined}
+        onDeleteClient={isDirector ? handleDeleteClient : undefined}
+        isDirector={isDirector}
       />
 
-      <SendNotificationModal
-        isOpen={isNotificationModalOpen}
-        onClose={() => setIsNotificationModalOpen(false)}
-        onSubmit={handleSendNotification}
-        clientName={selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ''}
-        isLoading={isLoadingNotification}
-      />
+      {/* Modales conseiller */}
+      {!isDirector && (
+        <>
+          <SendNotificationModal
+            isOpen={isNotificationModalOpen}
+            onClose={() => setIsNotificationModalOpen(false)}
+            onSubmit={handleSendNotification}
+            clientName={selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ''}
+            isLoading={isLoadingNotification}
+          />
 
-      <GrantLoanModal
-        isOpen={isLoanModalOpen}
-        onClose={() => setIsLoanModalOpen(false)}
-        onSubmit={handleGrantLoan}
-        clientName={selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ''}
-        isLoading={isLoadingLoan}
-      />
+          <GrantLoanModal
+            isOpen={isLoanModalOpen}
+            onClose={() => setIsLoanModalOpen(false)}
+            onSubmit={handleGrantLoan}
+            clientName={selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ''}
+            isLoading={isLoadingLoan}
+          />
+        </>
+      )}
+
+      {/* Modales directeur */}
+      {isDirector && (
+        <>
+          <CreateClientModal
+            isOpen={isCreateClientModalOpen}
+            onClose={() => setIsCreateClientModalOpen(false)}
+            onSubmit={handleCreateClient}
+            isLoading={isLoadingClientAction}
+          />
+
+          <EditClientModal
+            isOpen={isEditClientModalOpen}
+            onClose={() => setIsEditClientModalOpen(false)}
+            onSubmit={handleEditClient}
+            isLoading={isLoadingClientAction}
+            client={selectedClient ? {
+              email: selectedClient.email,
+              firstName: selectedClient.firstName,
+              lastName: selectedClient.lastName,
+            } : null}
+          />
+
+          {/* Confirmation pour bannir/activer */}
+          <ConfirmDialog
+            isOpen={isBanConfirmOpen}
+            onClose={() => setIsBanConfirmOpen(false)}
+            onConfirm={confirmBanToggleClient}
+            title={
+              selectedClient?.state === UserState.BANNED
+                ? t('director.activateClient.confirmTitle')
+                : t('director.banClient.confirmTitle')
+            }
+            message={
+              selectedClient?.state === UserState.BANNED
+                ? t('director.activateClient.confirm', {
+                    name: selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : '',
+                  })
+                : t('director.banClient.confirm', {
+                    name: selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : '',
+                  })
+            }
+            confirmText={
+              selectedClient?.state === UserState.BANNED
+                ? t('director.activateClient.button')
+                : t('director.banClient.button')
+            }
+            isLoading={isLoadingClientAction}
+            variant={selectedClient?.state === UserState.BANNED ? 'warning' : 'warning'}
+          />
+
+          {/* Modal de suppression avec IBAN */}
+          <DeleteAccountModal
+            isOpen={isDeleteConfirmOpen}
+            onClose={() => setIsDeleteConfirmOpen(false)}
+            onConfirm={confirmDeleteClient}
+            isLoading={isLoadingDeleteAccount}
+          />
+        </>
+      )}
     </div>
   );
 }

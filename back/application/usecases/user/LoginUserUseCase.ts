@@ -1,8 +1,8 @@
 import { UserRepository } from "../../../domain/repositories/UserRepository";
 import * as bcrypt from "bcrypt";
-import { LoginUserRequest } from "../../requests/LoginUserRequest";
+import { LoginUserRequest } from "../../requests";
 import { UserState } from "../../../domain/enumerations/UserState";
-import { InvalidCredentialsError, InactiveAccountError } from "../../../domain/errors";
+import { InvalidCredentialsError, InactiveAccountError, BannedAccountError } from "../../../domain/errors";
 import { User } from "../../../domain/entities/User";
 
 export class LoginUserUseCase {
@@ -16,6 +16,11 @@ export class LoginUserUseCase {
 
         if (!user) {
             throw new InvalidCredentialsError();
+        }
+
+        // Check if account is banned
+        if (user.state === UserState.BANNED) {
+            throw new BannedAccountError();
         }
 
         // Check if account is active (email verified)
