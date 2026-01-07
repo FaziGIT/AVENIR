@@ -24,7 +24,7 @@ export class CreateNewsUseCase {
     const user = await this.userRepository.getById(request.authorId);
 
     if (!user) {
-      throw new UserNotFoundError(`User with id ${request.authorId} not found`);
+      throw new UserNotFoundError(request.authorId);
     }
 
     if (user.role !== UserRole.ADVISOR) {

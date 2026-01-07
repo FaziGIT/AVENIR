@@ -18,7 +18,7 @@ export class GetChatsUseCase {
     async execute(request: GetChatsRequest): Promise<ChatResponse[]> {
         const user = await this.userRepository.getById(request.userId);
         if (!user) {
-            throw new UserNotFoundError(`User with id ${request.userId} not found`);
+            throw new UserNotFoundError(request.userId);
         }
 
         let chats: Chat[];

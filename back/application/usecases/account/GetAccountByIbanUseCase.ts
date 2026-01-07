@@ -9,7 +9,7 @@ export class GetAccountByIbanUseCase {
     async execute(request: GetAccountByIbanRequest): Promise<GetAccountsResponse> {
         const account = await this.accountRepository.getByIban(request.iban);
         if (!account) {
-            throw new AccountNotFoundError(`Account with IBAN ${request.iban} not found`);
+            throw new AccountNotFoundError(request.iban);
         }
         return GetAccountsResponseMapper.toResponse(account);
     }
