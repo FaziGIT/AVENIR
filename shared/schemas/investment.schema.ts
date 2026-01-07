@@ -11,7 +11,6 @@ const STOCK_ID_VALIDATION = z.string().min(1, 'ID de stock invalide');
 const ORDER_ID_VALIDATION = z.string().min(1, 'ID d\'ordre invalide');
 const QUANTITY_VALIDATION = z
     .number({ message: 'La quantité doit être un nombre' })
-    .int('La quantité doit être un nombre entier')
     .positive('La quantité doit être supérieure à 0');
 
 export const purchaseStockSchema = z.object({
