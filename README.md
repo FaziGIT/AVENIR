@@ -125,13 +125,23 @@ npm run db:reset
 GET http://localhost:3000/health
 ```
 
-### Client
+### Client avec crédits
 ```json
 {
   "firstName": "Clement",
   "lastName": "Tine",
   "email": "clement.tine@example.com",
   "identityNumber": "CLIENT001",
+  "passcode": "Password1!"
+}
+```
+### Client investissement
+```json
+{
+  "firstName": "Hugo",
+  "lastName": "Laurent",
+  "email": "hugo.laurent@gmail.com",
+  "identityNumber": "CLI005",
   "passcode": "Password1!"
 }
 ```
