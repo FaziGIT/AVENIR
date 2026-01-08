@@ -48,9 +48,6 @@ export const DashboardHeader = ({ activeTab, setActiveTab, onDeleteAccount }: Da
             navItems = [
                 { id: 'overview', label: t('dashboard.overview'), href: '/dashboard' },
                 { id: 'investment', label: t('dashboard.investmentHeader'), href: '/dashboard/investment' },
-                { id: 'card', label: t('dashboard.card'), href: '/dashboard' },
-                { id: 'activity', label: t('dashboard.activity'), href: '/dashboard' },
-                { id: 'saving', label: t('dashboard.saving'), href: '/dashboard' },
                 { id: 'loans', label: t('dashboard.loans'), href: '/dashboard/loans' },
                 { id: 'contact', label: t('dashboard.contact'), href: '/dashboard/contact' },
             ];
