@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/api';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/api';
 import { UserRole } from '@/types/enums';
 
 interface User {

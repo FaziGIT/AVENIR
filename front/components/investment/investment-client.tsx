@@ -18,7 +18,7 @@ import { StockAdminPanel } from '@/components/investment/stock-admin-panel';
 import type { ChartConfig } from '@/components/ui/chart';
 import type { Stock } from '@/components/investment/types';
 import type { PortfolioSummary, StockData } from '@/types/investment';
-import { fetchJSON } from '@/lib/api-client';
+import { fetchJSON } from '@/lib/api/api-client';
 import { getAvatarUrl, formatCurrency, formatPercent, getStockColor, mapPeriodToAPI } from '@/lib/investment-utils';
 import { MARKET_INSIGHTS } from '@/constants/investment';
 
