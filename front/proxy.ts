@@ -68,7 +68,7 @@ function isRouteAllowed(pathname: string, role: UserRole | null): boolean {
   return allowedRoutes.includes(pathname);
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const accessToken = request.cookies.get('accessToken')?.value;
