@@ -15,9 +15,11 @@ RUN npm install
 WORKDIR /app/shared
 RUN npm install
 
+RUN chmod +x /app/back/entrypoint.sh
+
 ENV NODE_ENV=production
 WORKDIR /app/back
 
 EXPOSE 3001
 
-CMD ["npx", "tsx", "infrastructure/adapters/fastify/server.ts"]
+CMD ["sh", "entrypoint.sh"]
