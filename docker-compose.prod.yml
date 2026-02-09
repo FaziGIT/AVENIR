@@ -46,6 +46,8 @@ services:
       SMTP_FROM: ${SMTP_FROM:-"AVENIR Bank <noreply@avenir-bank.com>"}
       PORT: 3001
       HOST: 0.0.0.0
+    expose:
+      - "3001"
     networks:
       - avenir-network
 
@@ -60,6 +62,8 @@ services:
     restart: unless-stopped
     depends_on:
       - back
+    expose:
+      - "3000"
     environment:
       NODE_ENV: production
     networks:
