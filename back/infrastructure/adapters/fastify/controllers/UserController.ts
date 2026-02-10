@@ -36,7 +36,7 @@ export class UserController {
         secure: process.env.NODE_ENV === 'production',
         sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
         path: '/',
-        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost',
+        domain: process.env.COOKIE_DOMAIN || (process.env.NODE_ENV === 'production' ? undefined : 'localhost'),
     };
     private readonly ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000;
     private readonly REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
