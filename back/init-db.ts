@@ -15,15 +15,25 @@ async function initDb() {
   });
 
   try {
-    // Run init.sql (uses IF NOT EXISTS, safe to re-run)
-    const initSql = fs.readFileSync(
-      path.join(__dirname, 'infrastructure/database/postgres/init.sql'),
-      'utf8'
+    // Check if DB is already initialized
+    const result = await pool.query(
+      "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users')"
     );
-    await pool.query(initSql);
-    console.log('✓ Database schema initialized');
+    const dbExists = result.rows[0].exists;
 
-    // Run migrations in order
+    if (!dbExists) {
+      // Fresh DB: run init.sql
+      const initSql = fs.readFileSync(
+        path.join(__dirname, 'infrastructure/database/postgres/init.sql'),
+        'utf8'
+      );
+      await pool.query(initSql);
+      console.log('✓ Database schema initialized');
+    } else {
+      console.log('✓ Database already initialized, skipping init.sql');
+    }
+
+    // Run migrations in order (always, they use IF NOT EXISTS / IF EXISTS)
     const migrationsDir = path.join(__dirname, 'infrastructure/database/postgres/migrations');
     if (fs.existsSync(migrationsDir)) {
       const files = fs.readdirSync(migrationsDir)
@@ -36,8 +46,8 @@ async function initDb() {
           await pool.query(sql);
           console.log(`  ✓ Migration: ${file}`);
         } catch (err: any) {
-          // Skip already-applied migrations (e.g. column already exists)
-          if (err.code === '42701' || err.code === '42P07' || err.code === '42710') {
+          // Skip already-applied migrations
+          if (['42701', '42P07', '42710', '23505'].includes(err.code)) {
             console.log(`  - Migration already applied: ${file}`);
           } else {
             throw err;
