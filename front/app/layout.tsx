@@ -32,6 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <script defer data-domain="avenir.mathistassart.fr" src="https://plausible.mathistassart.fr/js/script.js"></script>
+      </head>
       <body
         className={`${inter.variable} ${manrope.variable} font-sans antialiased overflow-x-hidden`}
       >
