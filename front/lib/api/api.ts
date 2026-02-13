@@ -85,14 +85,23 @@ export const api = {
 
   // Get current authenticated user
   getCurrentUser: async () => {
-    const res = await fetchWithAuth(`${API_URL}/api/auth/me`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
-    if (!res.ok) {
-      const error: any = new Error('Authentication failed');
-      error.status = res.status;
-      throw error;
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/auth/me`, {
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const error: any = new Error('Authentication failed');
+        error.status = res.status;
+        throw error;
+      }
+      return res.json();
+    } finally {
+      clearTimeout(timeout);
     }
-    return res.json();
   },
 
   // Logout

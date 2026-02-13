@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16.5-alpine
+
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-avenir_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-avenir_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./back/infrastructure/database/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-avenir_user} -d ${POSTGRES_DB:-avenir_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - avenir-network
+
+  back:
+    build:
+      context: .
+      dockerfile: back/Dockerfile
+
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-avenir_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB:-avenir_db}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-"AVENIR Bank <noreply@avenir-bank.com>"}
+      PORT: 3001
+      HOST: 0.0.0.0
+    expose:
+      - "3001"
+    networks:
+      - avenir-network
+
+  front:
+    build:
+      context: .
+      dockerfile: front/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:3001/api/ws}
+
+    restart: unless-stopped
+    depends_on:
+      - back
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+    networks:
+      - avenir-network
+
+networks:
+  avenir-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

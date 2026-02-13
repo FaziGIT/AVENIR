@@ -7,9 +7,12 @@ import { Wifi } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { LandingHeader } from '@/components/landing-header';
 import { DashboardPreview } from '@/components/dashboard-preview';
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
 export const LandingClient = () => {
     const { t } = useLanguage();
+    const { isAuthenticated } = useAuth();
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -57,17 +60,15 @@ export const LandingClient = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
-                                <motion.a
-                                    href="#"
-                                    className="inline-flex cursor-pointer items-center justify-center rounded-full bg-blue-600 px-8 py-4 text-base font-light text-white shadow-lg transition-all hover:bg-blue-700 md:text-lg"
-                                    whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' }}
-                                    whileTap={{ scale: 0.98 }}
-                                    tabIndex={0}
-                                    role="button"
-                                    aria-label={t('landing.hero.cta')}
-                                >
-                                    {t('landing.hero.cta')}
-                                </motion.a>
+                                <Link href={isAuthenticated ? '/dashboard' : '/register'}>
+                                    <motion.span
+                                        className="inline-flex cursor-pointer items-center justify-center rounded-full bg-blue-600 px-8 py-4 text-base font-light text-white shadow-lg transition-all hover:bg-blue-700 md:text-lg"
+                                        whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        {t('landing.hero.cta')}
+                                    </motion.span>
+                                </Link>
                             </motion.div>
                         </div>
                     </div>
