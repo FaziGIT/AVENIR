@@ -73,22 +73,18 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const connect = useCallback(() => {
         if (!currentUser) {
-            console.log('[WebSocket] Pas d\'utilisateur connecté, connexion annulée');
             return;
         }
 
         if (wsRef.current?.readyState === WebSocket.OPEN) {
-            console.log('[WebSocket] Déjà connecté');
             return;
         }
 
         try {
             const url = `${WS_URL}?userId=${currentUser.id}&userRole=${currentUser.role}`;
-            console.log('[WebSocket] Tentative de connexion à:', url);
             const ws = new WebSocket(url);
 
             ws.onopen = () => {
-                console.log('[WebSocket] Connecté avec succès');
                 setIsConnected(true);
                 reconnectAttemptsRef.current = 0;
             };
@@ -96,43 +92,33 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             ws.onmessage = (event) => {
                 try {
                     const message: WebSocketMessage = JSON.parse(event.data);
-                    console.log('[WebSocket] Message reçu:', message);
 
                     // Notifier tous les abonnés
                     subscribersRef.current.forEach(callback => callback(message));
                 } catch (error) {
-                    console.error('[WebSocket] Erreur lors du parsing du message:', error);
                 }
             };
 
             ws.onerror = (error: Event) => {
-                console.error('[WebSocket] Erreur de connexion');
-                console.error('[WebSocket] URL:', url);
-                console.error('[WebSocket] Event:', error);
-                console.error('[WebSocket] Type:', error.type);
             };
 
             ws.onclose = (event) => {
-                console.log('[WebSocket] Déconnecté - Code:', event.code, 'Raison:', event.reason);
                 setIsConnected(false);
                 wsRef.current = null;
 
                 // Tentative de reconnexion
                 if (reconnectAttemptsRef.current < 5) {
                     const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
-                    console.log(`[WebSocket] Reconnexion dans ${delay}ms... (tentative ${reconnectAttemptsRef.current + 1}/5)`);
                     reconnectTimeoutRef.current = setTimeout(() => {
                         reconnectAttemptsRef.current++;
                         connect();
                     }, delay);
                 } else {
-                    console.error('[WebSocket] Échec de reconnexion après 5 tentatives');
                 }
             };
 
             wsRef.current = ws;
         } catch (error) {
-            console.error('[WebSocket] Erreur de connexion:', error);
         }
     }, [currentUser]);
 
@@ -155,7 +141,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(message));
         } else {
-            console.warn('[WebSocket] Impossible d\'envoyer le message, WebSocket non connecté');
         }
     }, []);
 
@@ -169,22 +154,14 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     useEffect(() => {
         const userId = currentUser?.id || null;
 
-        console.log('[WebSocket] 🔍 === useEffect TRIGGERED ===');
-        console.log('[WebSocket] 🔍 currentUser:', currentUser);
-        console.log('[WebSocket] 👤 Current User ID:', userId);
-        console.log('[WebSocket] 📝 Previous User ID:', currentUserIdRef.current);
-
         if (currentUserIdRef.current === userId) {
-            console.log('[WebSocket] ℹ️ Même utilisateur, pas de reconnexion');
             return;
         }
         currentUserIdRef.current = userId;
 
         if (currentUser) {
-            console.log('[WebSocket] Connecting with user');
             connect();
         } else {
-            console.log('[WebSocket] No current user, disconnecting');
             disconnect();
         }
 

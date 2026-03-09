@@ -76,7 +76,6 @@ export const DeleteStockModal = ({
       onClose();
     } catch (error) {
       // Error: keep modal open, error is displayed via error prop
-      console.error('Delete failed:', error);
     }
   };
 

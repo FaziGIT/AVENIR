@@ -77,7 +77,6 @@ export default function LoansPage() {
             }
           });
         } catch (error) {
-          console.error('Erreur lors du traitement du nouveau crédit:', error);
         }
       }
     });

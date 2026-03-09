@@ -102,7 +102,6 @@ const StockChart = React.memo<StockChartProps>(({ symbol, currentPrice, period, 
           setIsSimulatedData(true);
         }
       } catch (error) {
-        console.error('Error fetching stock prices:', error);
         setChartData(generateFallbackData(currentPrice, period));
         setIsSimulatedData(true);
       } finally {
@@ -266,7 +265,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setTrades(data);
       }
     } catch (error) {
-      console.error('Error fetching trades:', error);
     }
   };
 
@@ -284,7 +282,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setPendingOrders(activeOrders);
       }
     } catch (error) {
-      console.error('Error fetching pending orders:', error);
     }
   };
 
@@ -302,7 +299,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         });
       }
     } catch (error) {
-      console.error('Error fetching order book:', error);
     }
   };
 
@@ -324,7 +320,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setError(errorData.error || 'Failed to cancel order');
       }
     } catch (error) {
-      console.error('Error canceling order:', error);
       setError('An error occurred while canceling order');
     }
   };
@@ -348,7 +343,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
             }
           }
         } catch (error) {
-          console.error('Error fetching admin stock data:', error);
         }
       }
     };
@@ -465,7 +459,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setAvailableBalance(data.balance);
       }
     } catch (error) {
-      console.error('Error fetching balance:', error);
     } finally {
       setIsLoading(false);
     }
@@ -484,7 +477,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setAvailableShares(position?.quantity || 0);
       }
     } catch (error) {
-      console.error('Error fetching portfolio:', error);
     }
   };
 
@@ -601,7 +593,6 @@ export const StockDetailModal = ({ isOpen, onClose, stock, onPurchaseSuccess }: 
         setError(errorData.error || 'Failed to place order');
       }
     } catch (error) {
-      console.error('Error placing order:', error);
       setError('An error occurred while placing order');
     } finally {
       setIsPurchasing(false);

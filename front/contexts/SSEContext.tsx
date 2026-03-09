@@ -105,25 +105,21 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const connect = useCallback(() => {
         if (!currentUser) {
-            console.log('[SSE] Pas d\'utilisateur connecté, connexion annulée');
             return;
         }
 
         if (eventSourceRef.current?.readyState === EventSource.OPEN) {
-            console.log('[SSE] Déjà connecté');
             return;
         }
 
         try {
             const url = `${API_BASE_URL}/api/sse`;
-            console.log('[SSE] Tentative de connexion à:', url);
 
             const eventSource = new EventSource(url, {
                 withCredentials: true
             });
 
             eventSource.onopen = () => {
-                console.log('[SSE] Connecté avec succès');
                 setIsConnected(true);
                 reconnectAttemptsRef.current = 0;
             };
@@ -142,7 +138,6 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     try {
                         const data = JSON.parse(event.data);
                         const sseEvent: SSEEvent = { type: eventType, data };
-                        console.log(`[SSE] Événement reçu: ${eventType}`, data);
 
                         if (eventType === SSEEventType.USER_BANNED) {
 
@@ -198,25 +193,21 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                             try {
                                 callback(sseEvent);
                             } catch (error) {
-                                console.error(`[SSE] Error in subscriber callback #${callbackIndex}:`, error);
                             }
                             callbackIndex++;
                         });
                     } catch (error) {
-                        console.error(`[SSE] Erreur lors du parsing de l'événement ${eventType}:`, error);
                     }
                 });
             });
 
             eventSource.onerror = (error) => {
-                console.error('[SSE] Erreur de connexion', error);
                 setIsConnected(false);
                 eventSource.close();
                 eventSourceRef.current = null;
 
                 if (reconnectAttemptsRef.current < 5) {
                     const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
-                    console.log(`[SSE] Reconnexion dans ${delay}ms... (tentative ${reconnectAttemptsRef.current + 1}/5)`);
                     reconnectTimeoutRef.current = setTimeout(() => {
                         reconnectAttemptsRef.current++;
                         if (connectFnRef.current) {
@@ -224,13 +215,11 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                         }
                     }, delay);
                 } else {
-                    console.error('[SSE] Échec de reconnexion après 5 tentatives');
                 }
             };
 
             eventSourceRef.current = eventSource;
         } catch (error) {
-            console.error('[SSE] Erreur de connexion:', error);
         }
     }, [currentUser]);
 
@@ -263,16 +252,13 @@ export const SSEProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const userId = currentUser?.id || null;
 
         if (currentUserIdRef.current === userId) {
-            console.log('[SSE] Même utilisateur, pas de reconnexion');
             return;
         }
         currentUserIdRef.current = userId;
 
         if (currentUser) {
-            console.log('[SSE] Connecting with user');
             connect();
         } else {
-            console.log('[SSE] No current user, disconnecting');
             disconnect();
             queueMicrotask(() => {
                 setIsConnected(false);

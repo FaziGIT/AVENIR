@@ -83,7 +83,6 @@ export default function Home() {
             const loadedAccounts = await accountApi.getAccounts();
             setAccounts(loadedAccounts);
         } catch (error) {
-            console.error('Error loading accounts:', error);
             toast({
                 title: t('common.error'),
                 description: 'Erreur lors du chargement des comptes',
@@ -105,7 +104,6 @@ export default function Home() {
             const loadedTransactions = await transactionApi.getTransactions();
             setTransactions(loadedTransactions);
         } catch (error) {
-            console.error('Error loading transactions:', error);
         } finally {
             setIsLoadingTransactions(false);
         }
@@ -128,7 +126,6 @@ export default function Home() {
                 const newsData = await getAllNews();
                 setNews(newsData);
             } catch (error) {
-                console.error('Error loading news:', error);
             } finally {
                 setIsLoadingNews(false);
             }
@@ -464,7 +461,6 @@ export default function Home() {
             await logout();
             router.push('/login');
         } catch (error) {
-            console.error('Error deleting account:', error);
             throw error;
         }
     };

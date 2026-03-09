@@ -48,7 +48,6 @@ export default function NewsPage() {
         const newsData = await getAllNews();
         setNews(newsData);
       } catch (error) {
-        console.error('Error loading news:', error);
         toast({
           title: t('news.errors.loadingError'),
           description: t('news.errors.loadingNews'),
@@ -112,7 +111,6 @@ export default function NewsPage() {
 
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error('Error creating news:', error);
       toast({
         title: t('news.modal.error'),
         description: error instanceof Error ? error.message : t('news.modal.errorDescription'),
@@ -144,7 +142,6 @@ export default function NewsPage() {
       setIsDeleteModalOpen(false);
       setNewsToDelete(null);
     } catch (error) {
-      console.error('Error deleting news:', error);
       toast({
         title: t('news.delete.errorTitle'),
         description: error instanceof Error ? error.message : t('news.delete.error'),

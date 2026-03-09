@@ -64,7 +64,6 @@ export const DashboardHeader = ({ activeTab, setActiveTab, onDeleteAccount }: Da
             await logout();
             router.push('/');
         } catch (error) {
-            console.error('Logout error:', error);
         }
     };
 

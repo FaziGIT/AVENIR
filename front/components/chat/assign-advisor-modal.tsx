@@ -34,7 +34,6 @@ export const AssignAdvisorModal = ({
       const response = await userApi.getUsers({ role: 'ADVISOR' });
       setAdvisors(Array.isArray(response) ? response : []);
     } catch (error) {
-      console.error('Error loading advisors:', error);
     } finally {
       setIsLoadingAdvisors(false);
     }

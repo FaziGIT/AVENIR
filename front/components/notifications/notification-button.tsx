@@ -54,7 +54,6 @@ export const NotificationButton = () => {
         const data = await getNotifications();
         setNotifications(data);
       } catch (error) {
-        console.error('Error loading notifications:', error);
       } finally {
         setIsLoading(false);
       }
@@ -97,7 +96,6 @@ export const NotificationButton = () => {
         prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
       );
     } catch (error) {
-      console.error('Error marking notification as read:', error);
     }
   };
 
@@ -106,7 +104,6 @@ export const NotificationButton = () => {
       await markAllNotificationsAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
     }
   };
 
@@ -115,7 +112,6 @@ export const NotificationButton = () => {
       await deleteNotificationApi(notificationId);
       setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     } catch (error) {
-      console.error('Error deleting notification:', error);
     }
   };
 

@@ -147,7 +147,6 @@ export default function ClientsPage() {
             return prevSelected;
           });
         } catch (error) {
-          console.error('Erreur lors du traitement de la mise à jour du crédit:', error);
         }
       }
     });
@@ -181,7 +180,6 @@ export default function ClientsPage() {
 
       setIsNotificationModalOpen(false);
     } catch (error) {
-      console.error('Error sending notification:', error);
       toast({
         title: t('clients.notification.error'),
         variant: 'destructive',

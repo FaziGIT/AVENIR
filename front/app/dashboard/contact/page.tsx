@@ -100,7 +100,6 @@ export default function ContactPage() {
       const mappedChats = Array.isArray(response) ? mapChatsFromApi(response) : [];
       setChats(mappedChats);
     } catch (error) {
-      console.error('Error loading chats:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.loadingChats'),
@@ -124,7 +123,6 @@ export default function ContactPage() {
         [chatId]: mappedMessages,
       }));
     } catch (error) {
-      console.error('Error loading messages:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.loadingMessages'),
@@ -250,7 +248,6 @@ export default function ContactPage() {
           setChats(mappedChats);
         }
       }).catch((error) => {
-        console.error('Error checking chat access:', error);
       });
     } else {
       loadChats();
@@ -262,7 +259,6 @@ export default function ContactPage() {
             setSelectedChat(updatedChat);
           })
           .catch((error) => {
-            console.error('Error reloading chat:', error);
           });
       }
     }
@@ -274,8 +270,6 @@ export default function ContactPage() {
     loadChats();
 
     const unsubscribe = subscribe((message) => {
-      console.log('[ContactPage] WebSocket message received:', message);
-
       switch (message.type) {
         case WebSocketMessageType.NEW_MESSAGE:
           handleNewMessage(message);
@@ -295,7 +289,7 @@ export default function ContactPage() {
         case WebSocketMessageType.CONNECTED:
           break;
         default:
-          console.log('Unknown message type:', message.type);
+          break;
       }
     });
 
@@ -352,7 +346,6 @@ export default function ContactPage() {
         content,
       });
     } catch (error) {
-      console.error('Error sending message:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.sendingMessage'),
@@ -385,7 +378,6 @@ export default function ContactPage() {
         description: t('chat.success.conversationCreated'),
       });
     } catch (error) {
-      console.error('Error creating chat:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.creatingConversation'),
@@ -417,7 +409,6 @@ export default function ContactPage() {
         description: t('chat.success.conversationClosed'),
       });
     } catch (error) {
-      console.error('Error closing chat:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.closingConversation'),
@@ -453,7 +444,6 @@ export default function ContactPage() {
         description: t('chat.success.conversationTransferred'),
       });
     } catch (error) {
-      console.error('Error transferring chat:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.transferringConversation'),
@@ -488,7 +478,6 @@ export default function ContactPage() {
         description: t('chat.success.advisorAssigned'),
       });
     } catch (error) {
-      console.error('Error assigning advisor:', error);
       toast({
         title: t('chat.errors.title'),
         description: t('chat.errors.assigningAdvisor'),

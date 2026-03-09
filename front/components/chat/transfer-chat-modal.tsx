@@ -38,7 +38,6 @@ export const TransferChatModal = ({
         : [];
       setAdvisors(filteredAdvisors);
     } catch (error) {
-      console.error('Error loading advisors:', error);
     } finally {
       setIsLoadingAdvisors(false);
     }

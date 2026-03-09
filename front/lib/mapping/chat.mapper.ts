@@ -128,7 +128,6 @@ export const mapChatFromApi = (apiChat: ChatApiDto): Chat => {
 export const mapChatsFromApi = (apiChats: ChatApiDto[]): Chat[] => {
   // Vérification de sécurité : retourner un tableau vide si apiChats est undefined ou null
   if (!apiChats || !Array.isArray(apiChats)) {
-    console.warn('[mapChatsFromApi] Invalid apiChats data:', apiChats);
     return [];
   }
 

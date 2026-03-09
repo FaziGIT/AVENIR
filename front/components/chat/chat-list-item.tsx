@@ -77,7 +77,6 @@ export const ChatListItem = ({ chat, isActive, onClick, currentUserRole, onClien
         locale,
       });
     } catch (error) {
-      console.error('Error formatting date:', error);
       return '';
     }
   };

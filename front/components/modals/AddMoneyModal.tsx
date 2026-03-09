@@ -75,7 +75,6 @@ export const AddMoneyModal = ({ open, onOpenChange, onSuccess }: AddMoneyModalPr
             const loadedAccounts = await accountApi.getAccounts();
             setAccounts(loadedAccounts);
         } catch (error) {
-            console.error('Error loading accounts:', error);
         } finally {
             setIsLoadingAccounts(false);
         }
